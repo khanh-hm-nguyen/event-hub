@@ -2,7 +2,7 @@ import React from 'react'
 
 const page = () => {
   return (
-    <div>Welcom to nextjs 16</div>
+    <h1>Welcome to nextjs 16</h1>
   )
 }
 
