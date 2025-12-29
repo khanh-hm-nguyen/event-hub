@@ -3,6 +3,7 @@
 import { Event } from "@/models";
 import connectDB from "@/lib/mongodb";
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 
 export const getSimilarEventsBySlug = async (slug: string) => {
   try {
@@ -40,3 +41,62 @@ export const getAllEvents = async () => {
     return [];
   }
 };
+
+
+// --- CREATE ---
+export async function createEventAction(prevState: any, formData: FormData) {
+  try {
+    await connectDB();
+
+    const data = {
+      title: formData.get("title"),
+      date: formData.get("date"),
+      time: formData.get("time"),
+      location: formData.get("location"),
+      mode: formData.get("mode"),
+      organizer: formData.get("organizer"),
+      description: formData.get("description"),
+      image: formData.get("image"),
+      // Split tags by comma and clean whitespace
+      tags: (formData.get("tags") as string).split(",").map(tag => tag.trim()),
+      slug: (formData.get("title") as string).toLowerCase().replace(/ /g, "-") + "-" + Date.now(),
+    };
+
+    await Event.create(data);
+
+    revalidatePath("/admin/events");
+  } catch (error) {
+    return { message: "Database Error: Failed to Create Event", success: false };
+  }
+
+  // Redirect outside try/catch to avoid Next.js error
+  redirect("/admin/events");
+}
+
+// --- UPDATE ---
+export async function updateEventAction(id: string, prevState: any, formData: FormData) {
+  try {
+    await connectDB();
+
+    const data = {
+      title: formData.get("title"),
+      date: formData.get("date"),
+      time: formData.get("time"),
+      location: formData.get("location"),
+      mode: formData.get("mode"),
+      organizer: formData.get("organizer"),
+      description: formData.get("description"),
+      image: formData.get("image"),
+      tags: (formData.get("tags") as string).split(",").map(tag => tag.trim()),
+    };
+
+    await Event.findByIdAndUpdate(id, data);
+
+    revalidatePath("/admin/events");
+    revalidatePath(`/admin/events/edit/${id}`);
+  } catch (error) {
+    return { message: "Database Error: Failed to Update Event", success: false };
+  }
+
+  redirect("/admin/events");
+}

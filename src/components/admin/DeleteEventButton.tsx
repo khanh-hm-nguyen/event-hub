@@ -21,7 +21,7 @@ const DeleteEventButton = ({ eventId }: { eventId: string }) => {
     <button
       onClick={handleDelete}
       disabled={isPending}
-      className={`px-3 py-1 text-sm text-white rounded bg-red-500 hover:bg-red-600 transition
+      className={`px-3 py-1 text-sm font-medium text-white rounded-md bg-red-600/90 hover:bg-red-500 transition-all border border-red-700
         ${isPending ? "opacity-50 cursor-not-allowed" : ""}`}
     >
       {isPending ? "Deleting..." : "Delete"}
