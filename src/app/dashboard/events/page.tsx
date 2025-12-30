@@ -3,7 +3,7 @@ import { getAllEvents } from "@/lib/actions/event.action";
 import DeleteEventButton from "@/components/admin/DeleteEventButton";
 import { IEvent } from "@/models";
 import EventStatusBadge from "@/components/admin/EventStatusBadge";
-import EventModeBadge from "@/components/admin/EventModeBadge"; // ✅ Import Mode Badge
+import EventModeBadge from "@/components/admin/EventModeBadge"; 
 import EventTableFilters from "@/components/admin/EventTableFilters";
 import { isFuture, isPast, isToday, parseISO } from "date-fns";
 

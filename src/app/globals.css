@@ -3,6 +3,9 @@
 
 @custom-variant dark (&:is(.dark *));
 
+html, body {
+  scroll-behavior: smooth ;
+}
 :root {
     --color-blue: #94eaff;
     --color-light-100: #e7f2ff;
