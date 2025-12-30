@@ -3,6 +3,8 @@ import { NextRequest, NextResponse } from "next/server";
 import connectDB from "@/lib/mongodb";
 import { Booking } from "@/models";
 
+import { getDataFromToken } from "@/utils/getDataFromToken";
+
 // route params
 type RouteParams = {
   params: Promise<{
@@ -19,6 +21,15 @@ export async function GET(
   { params }: RouteParams
 ): Promise<NextResponse> {
   try {
+    // only allow admin to get booking
+    const user = getDataFromToken(req);
+
+    if (!user || user.role !== "admin") {
+      return NextResponse.json(
+        { message: "Forbidden. Admin access required." },
+        { status: 403 }
+      );
+    }
     await connectDB();
 
     const { eventId } = await params;

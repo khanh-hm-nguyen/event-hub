@@ -55,7 +55,7 @@ const UserSchema = new Schema<IUser>(
 );
 
 // Create index on email for faster login lookups
-UserSchema.index({ email: 1 });
+//UserSchema.index({ email: 1 });
 
 const User = models.User || model<IUser>("User", UserSchema);
 

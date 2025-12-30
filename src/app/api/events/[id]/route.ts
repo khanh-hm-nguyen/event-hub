@@ -3,6 +3,8 @@ import { NextRequest, NextResponse } from "next/server";
 import connectDB from "@/lib/mongodb";
 import { Event } from "@/models";
 
+import { getDataFromToken } from "@/utils/getDataFromToken";
+
 type RouteParams = {
   params: Promise<{
     id: string;
@@ -83,14 +85,23 @@ export async function PUT(
   { params }: RouteParams
 ): Promise<NextResponse> {
   try {
+
+    // only allow admin to update event
+    const user = getDataFromToken(req);
+
+    if (!user || user.role !== "admin") {
+      return NextResponse.json(
+        { message: "Forbidden. Admin access required." },
+        { status: 403 }
+      );
+    }
+
     await connectDB();
 
     const id = (await params).id;
     const body = await req.json();
 
     // Find by ID and Update
-    // { new: true } -> Returns the updated document instead of the old one
-    // { runValidators: true } -> Ensures updates follow your Schema rules
     const updatedEvent = await Event.findByIdAndUpdate(id, body, {
       new: true,
       runValidators: true,
@@ -108,17 +119,29 @@ export async function PUT(
       { status: 200 }
     );
   } catch (error) {
+   // Log error for debugging (only in development)
     if (process.env.NODE_ENV === "development") {
-      console.error("Error updating event:", error);
+      console.error("Error fetching events by slug:", error);
     }
 
+    // Handle specific error types
     if (error instanceof Error) {
+      // Handle database connection errors
+      if (error.message.includes("MONGODB_URI")) {
+        return NextResponse.json(
+          { message: "Database configuration error" },
+          { status: 500 }
+        );
+      }
+
+      // Return generic error with error message
       return NextResponse.json(
-        { message: "Failed to update event", error: error.message },
+        { message: "Failed to fetch events", error: error.message },
         { status: 500 }
       );
     }
 
+    // Handle unknown errors
     return NextResponse.json(
       { message: "An unexpected error occurred" },
       { status: 500 }
@@ -128,16 +151,25 @@ export async function PUT(
 
 /**
  * DELETE /api/events/[id]
- * Deletes an event by its id
+ * Deletes an event by its id (Protected: Admin only)
  */
 export async function DELETE(
   req: NextRequest,
-  { params }: RouteParams
+  { params }: { params: Promise<{ id: string }> } // Updated type definition
 ): Promise<NextResponse> {
   try {
-    await connectDB();
+    // only allow admin to delete event
+    const user = getDataFromToken(req);
 
-    const id = (await params).id;
+    if (!user || user.role !== "admin") {
+      return NextResponse.json(
+        { message: "Forbidden. Admin access required." },
+        { status: 403 }
+      );
+    }
+
+    await connectDB();
+    const { id } = await params;
 
     const deletedEvent = await Event.findByIdAndDelete(id);
 
@@ -153,17 +185,29 @@ export async function DELETE(
       { status: 200 }
     );
   } catch (error) {
+    // Log error for debugging (only in development)
     if (process.env.NODE_ENV === "development") {
-      console.error("Error deleting event:", error);
+      console.error("Error fetching events by slug:", error);
     }
 
+    // Handle specific error types
     if (error instanceof Error) {
+      // Handle database connection errors
+      if (error.message.includes("MONGODB_URI")) {
+        return NextResponse.json(
+          { message: "Database configuration error" },
+          { status: 500 }
+        );
+      }
+
+      // Return generic error with error message
       return NextResponse.json(
-        { message: "Failed to delete event", error: error.message },
+        { message: "Failed to fetch events", error: error.message },
         { status: 500 }
       );
     }
 
+    // Handle unknown errors
     return NextResponse.json(
       { message: "An unexpected error occurred" },
       { status: 500 }
