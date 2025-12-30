@@ -7,7 +7,7 @@ import EventModeBadge from "@/components/admin/EventModeBadge";
 import EventTableFilters from "@/components/admin/EventTableFilters";
 import { isFuture, isPast, isToday, parseISO } from "date-fns";
 
-export const dynamic = "force-dynamic";
+
 
 const AdminEventsPage = async ({
   searchParams,
@@ -50,7 +50,7 @@ const AdminEventsPage = async ({
       </div>
 
       {/* Filters */}
-      <EventTableFilters />
+      {/* <EventTableFilters /> */}
 
       {/* Table */}
       <div className="bg-gray-900/50 backdrop-blur-sm shadow-xl rounded-xl border border-gray-800 overflow-hidden">

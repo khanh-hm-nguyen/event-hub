@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import { Schibsted_Grotesk, Martian_Mono } from "next/font/google";
 import { LightRays } from "@/components";
-import "../../globals.css"
+import "../../globals.css";
 
-import { Navbar, Footer } from "@/components/layout";
+import { Footer } from "@/components/layout";
+import { Sidebar } from "@/components/dashboardLayout";
 
 const schibstedGrotesk = Schibsted_Grotesk({
   variable: "--font-schibsted-grotesk",
@@ -16,11 +17,11 @@ const martianMono = Martian_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "DevEvent",
-  description: "The Hub for Every Dev Event You Mustn't Miss",
+  title: "Admin Dashboard | DevEvent",
+  description: "Manage your events and settings",
 };
 
-export default function RootLayout({
+export default function DashboardLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
@@ -28,9 +29,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${schibstedGrotesk.variable} ${martianMono.variable} min-h-screen antialiased`}
+        className={`${schibstedGrotesk.variable} ${martianMono.variable} min-h-screen antialiased bg-gray-900 text-gray-100 font-sans selection:bg-[#5dfeca] selection:text-black`}
       >
-        <div className="absolute inset-0 top-0 z-[-1] min-h-screen">
+        {/* 1. Background (Fixed) */}
+        <div className="fixed inset-0 z-0 pointer-events-none">
           <LightRays
             raysOrigin="top-center-offset"
             raysColor="#5dfeca"
@@ -43,8 +45,16 @@ export default function RootLayout({
             distortion={0.01}
           />
         </div>
-        <main> {children}</main>
-        <Footer />
+
+        <Sidebar />
+
+        <main className="pl-64 flex flex-col min-h-screen relative z-10">
+          <div className="flex-1 w-full max-w-7xl mx-auto p-6">{children}</div>
+
+          <div className="mt-auto px-6 pb-4">
+            <Footer />
+          </div>
+        </main>
       </body>
     </html>
   );

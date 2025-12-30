@@ -21,20 +21,22 @@ const EventTableFilters = () => {
       params.delete(key);
     }
 
+    // Only reset page if we are actually searching/filtering
     params.set("page", "1"); 
     replace(`${pathname}?${params.toString()}`);
   };
 
   useEffect(() => {
     const delayDebounceFn = setTimeout(() => {
-      if (query !== searchParams.get("query")) {
+      const currentUrlQuery = searchParams.get("query")?.toString() || "";
+
+      if (query !== currentUrlQuery) {
         updateUrl("query", query);
       }
     }, 300);
 
     return () => clearTimeout(delayDebounceFn);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [query]); 
+  }, [query]);
 
   return (
     // Container: Darker background to separate from page
