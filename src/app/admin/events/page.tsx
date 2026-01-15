@@ -1,9 +1,11 @@
-import React from 'react'
+import AdminEventsPage from "@/components/admin/events/AdminEventsPage";
 
 const page = () => {
   return (
-    <div>page</div>
-  )
-}
+    <>
+      <AdminEventsPage />
+    </>
+  );
+};
 
-export default page
+export default page;

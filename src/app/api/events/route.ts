@@ -1,3 +1,5 @@
+//api/events/route.ts
+
 import connectDB from "@/lib/mongodb";
 import { NextRequest, NextResponse } from "next/server";
 import { Event } from "@/models";

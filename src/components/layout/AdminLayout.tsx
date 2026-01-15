@@ -20,15 +20,6 @@ const AdminLayout = ({
       {/* --- SIDEBAR --- */}
       <aside className="w-64 hidden md:flex flex-col bg-white/90 backdrop-blur-md border-r border-slate-200 shadow-sm z-10">
         
-        {/* Logo Area */}
-        <div className="h-16 flex items-center gap-2 px-6 border-b border-slate-100">
-          <div className="p-1.5 bg-indigo-600 rounded text-white">
-            <Dashboard fontSize="small" />
-          </div>
-          <span className="font-bold text-lg text-slate-800 tracking-tight">
-            Event<span className="text-indigo-600">Hub</span> Admin
-          </span>
-        </div>
 
         {/* Navigation Links */}
         <nav className="flex-1 py-6 px-3 space-y-1">

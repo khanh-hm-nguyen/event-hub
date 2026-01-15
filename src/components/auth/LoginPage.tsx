@@ -12,9 +12,12 @@ import {
   ErrorOutline,
 } from "@mui/icons-material";
 
+import { useUserStore } from "@/store/useUserStore";
+
 const LoginPage = () => {
   const router = useRouter();
 
+  const setUser = useUserStore((state) => state.setUser);
 
   const [formData, setFormData] = useState({
     email: "",
@@ -50,6 +53,9 @@ const LoginPage = () => {
       if (!res.ok) {
         throw new Error(data.message || "Login failed");
       }
+      
+      console.log(data.user)
+      setUser(data.user);
 
       if (data.user.role === "admin") {
         router.push("/admin");

@@ -14,6 +14,9 @@ import {
   Menu as MenuIcon,
 } from "@mui/icons-material";
 
+import { Person } from "@mui/icons-material";
+import { useUserStore } from "@/store/useUserStore";
+
 interface AdminLayoutShellProps {
   children: ReactNode;
 }
@@ -51,7 +54,7 @@ const AdminLayoutShell = ({ children }: AdminLayoutShellProps) => {
       </div>
     </div>
   );
-}
+};
 
 // Sub-component: Sidebar Content
 function SidebarContent() {
@@ -114,6 +117,8 @@ function SidebarContent() {
 
 // Sub-component: Header
 function AdminHeader({ onMenuClick }: { onMenuClick: () => void }) {
+  const user = useUserStore((state) => state.user);
+
   return (
     <header className="h-16 flex items-center justify-between px-4 md:px-8 bg-white/80 backdrop-blur-md border-b border-slate-200 sticky top-0 z-10">
       <div className="flex items-center gap-3">
@@ -142,12 +147,13 @@ function AdminHeader({ onMenuClick }: { onMenuClick: () => void }) {
 
         <div className="flex items-center gap-3 pl-4 border-l border-slate-200">
           <div className="text-right hidden sm:block">
-            <p className="text-sm font-semibold text-slate-800">Admin</p>
-            <p className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">
-              Moderator
+            <p className="text-sm font-bold text-slate-800">
+              {user?.name || "Admin User"}
             </p>
           </div>
-          <div className="h-9 w-9 rounded-full bg-gradient-to-tr from-indigo-500 to-violet-500 shadow-md ring-2 ring-white"></div>
+          <div className="h-10 w-10 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 border border-indigo-200">
+            <Person />
+          </div>
         </div>
       </div>
     </header>
@@ -184,4 +190,4 @@ function SidebarLink({
   );
 }
 
-export default AdminLayoutShell
+export default AdminLayoutShell;
