@@ -2,9 +2,20 @@ import connectDB from "@/lib/mongodb";
 import { NextRequest, NextResponse } from "next/server";
 import { Event } from "@/models";
 import { v2 as cloudinary } from "cloudinary";
+import { getDataFromToken } from "@/app/utils/getDataFromToken";
 
 export async function POST(req: NextRequest) {
   try {
+    // only allow admin to create event
+    const user = getDataFromToken(req);
+
+    if (!user || user.role !== "admin") {
+      return NextResponse.json(
+        { message: "Forbidden. Admin access required." },
+        { status: 403 }
+      );
+    }
+
     await connectDB();
 
     const formData = await req.formData();
@@ -59,13 +70,32 @@ export async function POST(req: NextRequest) {
       { message: "Event created successfully", event: createdEvent },
       { status: 201 }
     );
-  } catch (e) {
-    console.error(e);
+  } catch (error) {
+    // Log error for debugging (only in development)
+    if (process.env.NODE_ENV === "development") {
+      console.error("Error fetching events by slug:", error);
+    }
+
+    // Handle specific error types
+    if (error instanceof Error) {
+      // Handle database connection errors
+      if (error.message.includes("MONGODB_URI")) {
+        return NextResponse.json(
+          { message: "Database configuration error" },
+          { status: 500 }
+        );
+      }
+
+      // Return generic error with error message
+      return NextResponse.json(
+        { message: "Failed to fetch events", error: error.message },
+        { status: 500 }
+      );
+    }
+
+    // Handle unknown errors
     return NextResponse.json(
-      {
-        message: "Event Creation Failed",
-        error: e instanceof Error ? e.message : "Unknown",
-      },
+      { message: "An unexpected error occurred" },
       { status: 500 }
     );
   }
@@ -81,9 +111,32 @@ export async function GET() {
       { message: "Events fetched successfully", events },
       { status: 200 }
     );
-  } catch (e) {
+  } catch (error) {
+    // Log error for debugging (only in development)
+    if (process.env.NODE_ENV === "development") {
+      console.error("Error fetching events by slug:", error);
+    }
+
+    // Handle specific error types
+    if (error instanceof Error) {
+      // Handle database connection errors
+      if (error.message.includes("MONGODB_URI")) {
+        return NextResponse.json(
+          { message: "Database configuration error" },
+          { status: 500 }
+        );
+      }
+
+      // Return generic error with error message
+      return NextResponse.json(
+        { message: "Failed to fetch events", error: error.message },
+        { status: 500 }
+      );
+    }
+
+    // Handle unknown errors
     return NextResponse.json(
-      { message: "Event fetching failed", error: e },
+      { message: "An unexpected error occurred" },
       { status: 500 }
     );
   }
