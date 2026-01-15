@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import connectDB from "@/lib/mongodb";
 import { Booking } from "@/models";
-import { getDataFromToken } from "@/app/utils/getDataFromToken";
+import { getDataFromToken } from "@/utils/getDataFromToken";
 
 // Get all bookings
 export async function GET(req: NextRequest) {

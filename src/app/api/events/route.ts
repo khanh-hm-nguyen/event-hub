@@ -2,7 +2,7 @@ import connectDB from "@/lib/mongodb";
 import { NextRequest, NextResponse } from "next/server";
 import { Event } from "@/models";
 import { v2 as cloudinary } from "cloudinary";
-import { getDataFromToken } from "@/app/utils/getDataFromToken";
+import { getDataFromToken } from "@/utils/getDataFromToken";
 
 export async function POST(req: NextRequest) {
   try {

@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import connectDB from "@/lib/mongodb";
 import { Event } from "@/models";
 
-import { getDataFromToken } from "@/app/utils/getDataFromToken";
+import { getDataFromToken } from "@/utils/getDataFromToken";
 
 type RouteParams = {
   params: Promise<{
