@@ -1,36 +1,95 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🚀 EventHub
+EventHub is a premier, high-performance platform built for the global developer community. It serves as a centralized "Hub" for discovering, attending, and managing tech events—from local meetups to global hackathons.
 
-## Getting Started
+## ✨ Features
+### 🌐 Public Experience
+* Dynamic Event Discovery: Browse featured events with a clean, high-contrast UI.
 
-First, run the development server:
+* LightRays Aesthetic: A bespoke, dark glassmorphic design with neon green (#5dfeca) accents.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+* Community Focused: Dedicated spaces to understand the vision and connect with other builders.
+
+* Responsive Design: Fully optimized for mobile, tablet, and desktop viewing.
+
+### 🔐 Security & Auth
+* JWT Authentication: Secure session management using HTTP-only cookies.
+
+* Role-Based Access Control (RBAC): Middleware-protected routes ensuring only admins can access management tools.
+
+* Zustand State Management: Persistent client-side state with hydration guards to prevent SSR mismatches.
+
+### 🛠 Admin Portal
+* Event Management: Full CRUD capabilities for managing event listings.
+
+* Booking Oversight: Track community engagement and attendance.
+
+* Command Center UI: A specialized dark-mode dashboard designed for high-efficiency management.
+
+## 🏗 Tech Stack
+* Framework: Next.js 16 (App Router)
+* Media Management: Cloudinary (Image hosting, optimization, and transformations)
+* Styling: Tailwind CSS
+* Database: MongoDB with Mongoose
+* State Management: Zustand
+* Authentication: JSON Web Tokens (JWT) & Jose
+* Icons: Material UI Icons
+
+## 🚦 Getting Started
+### Prerequisites
+* Node.js 18+
+
+* MongoDB Atlas account or local instance
+
+Installation
+1. Clone the repository:
+
+```Bash
+git clone https://github.com/your-username/eventhub.git
+cd eventhub
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. Install dependencies:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```Bash
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+npm install
+```
 
-## Learn More
+3. Environment Variables: Create a .env.local file in the root directory and add the following:
 
-To learn more about Next.js, take a look at the following resources:
+```MONGODB_URI=your_mongodb_connection_string
+JWT_SECRET=your_ultra_secure_secret_key
+NODE_ENV=development
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+4. Run the development server:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```Bash
+npm run dev
+```
 
-## Deploy on Vercel
+Open http://localhost:3000 with your browser to see the result.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 🛡 API & Server Actions
+* The project utilizes a hybrid approach for maximum performance:
+
+* Server Actions: Used for data fetching and administrative mutations (getEventById, getAllEvents).
+
+* API Routes: Used for authentication lifecycle (/api/auth/login, /api/auth/logout).
+
+* Middleware: Centralized security layer for route protection.
+
+### 📂 Project Structure
+```
+Plaintext
+
+src/
+├── actions/      # Secure Server Actions
+├── app/          # Next.js App Router (Public & Admin)
+├── components/   # Reusable UI & Layout components
+├── lib/          # Database connection & shared utilities
+├── models/       # Mongoose Schemas
+├── store/        # Zustand State Management
+└── middleware.ts # Route Protection Logic
+```
