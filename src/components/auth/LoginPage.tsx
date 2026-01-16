@@ -8,15 +8,14 @@ import {
   Lock,
   Visibility,
   VisibilityOff,
-  Dashboard,
   ErrorOutline,
 } from "@mui/icons-material";
 
 import { useUserStore } from "@/store/useUserStore";
+import Logo from "@/components/ui/Logo";
 
 const LoginPage = () => {
   const router = useRouter();
-
   const setUser = useUserStore((state) => state.setUser);
 
   const [formData, setFormData] = useState({
@@ -24,13 +23,11 @@ const LoginPage = () => {
     password: "",
   });
   const [showPassword, setShowPassword] = useState(false);
-
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.id]: e.target.value });
-
     if (errorMessage) setErrorMessage("");
   };
 
@@ -42,137 +39,138 @@ const LoginPage = () => {
     try {
       const res = await fetch("/api/auth/login", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       });
 
       const data = await res.json();
+      if (!res.ok) throw new Error(data.message || "Login failed");
 
-      if (!res.ok) {
-        throw new Error(data.message || "Login failed");
-      }
-      
-      console.log(data.user)
       setUser(data.user);
-
-      if (data.user.role === "admin") {
-        router.push("/admin");
-      } else {
-        router.push("/");
-      }
-    } catch (error) {
-      setErrorMessage("Something went wrong. Please try again.");
+      router.push(data.user.role === "admin" ? "/admin" : "/");
+    } catch (error: any) {
+      setErrorMessage(
+        error.message || "Something went wrong. Please try again."
+      );
       setIsLoading(false);
     }
   };
+
   return (
-    <div className="bg-white rounded-3xl shadow-xl shadow-slate-200/50 border border-slate-100 overflow-hidden">
-      {/* Header Section */}
-      <div className="p-8 pb-6 text-center">
-        <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-indigo-50 text-indigo-600 mb-4">
-          <Dashboard />
+    <div className="max-w-md mx-auto mt-12">
+      <div className="bg-black/40 backdrop-blur-2xl rounded-[3rem] border border-white/10 overflow-hidden shadow-2xl relative">
+        {/* Decorative Glows */}
+        <div className="absolute -top-24 -left-24 w-48 h-48 bg-[#5dfeca]/10 rounded-full blur-[80px]" />
+
+        {/* Header Section */}
+        <div className="p-10 pb-6 text-center relative z-10">
+          <h1 className="text-3xl font-black text-white tracking-tighter uppercase">
+            Admin <span className="text-[#5dfeca]">Portal</span>
+          </h1>
+          <p className="text-slate-500 mt-2 text-sm font-medium tracking-tight">
+            Authorize to manage community events
+          </p>
         </div>
-        <h1 className="text-2xl font-bold text-slate-900">Welcome Back</h1>
-        <p className="text-slate-500 mt-2 text-sm">
-          Sign in to manage your events and bookings
-        </p>
+
+        {/* Form Section */}
+        <div className="p-10 pt-0 relative z-10">
+          {errorMessage && (
+            <div className="mb-6 p-4 rounded-2xl bg-red-500/10 border border-red-500/20 flex items-start gap-3 text-red-400 text-xs animate-in fade-in slide-in-from-top-2">
+              <ErrorOutline fontSize="small" className="shrink-0" />
+              <span className="font-bold uppercase tracking-wider">
+                {errorMessage}
+              </span>
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit} className="space-y-6">
+            {/* Email Input */}
+            <div className="space-y-2">
+              <label
+                htmlFor="email"
+                className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] ml-2"
+              >
+                Email Address
+              </label>
+              <div className="relative group">
+                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-500 group-focus-within:text-[#5dfeca] transition-colors">
+                  <Email fontSize="small" />
+                </div>
+                <input
+                  id="email"
+                  type="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  placeholder="admin@eventhub.com"
+                  className="block w-full pl-12 pr-4 py-4 bg-white/5 border border-white/10 rounded-2xl text-white placeholder-slate-600 focus:outline-none focus:border-[#5dfeca] transition-all text-sm font-medium"
+                  required
+                />
+              </div>
+            </div>
+
+            {/* Password Input */}
+            <div className="space-y-2">
+              <div className="flex items-center justify-between ml-2">
+                <label
+                  htmlFor="password"
+                  className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]"
+                >
+                  Password
+                </label>
+              </div>
+              <div className="relative group">
+                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-500 group-focus-within:text-[#5dfeca] transition-colors">
+                  <Lock fontSize="small" />
+                </div>
+                <input
+                  id="password"
+                  type={showPassword ? "text" : "password"}
+                  value={formData.password}
+                  onChange={handleChange}
+                  placeholder="••••••••"
+                  className="block w-full pl-12 pr-12 py-4 bg-white/5 border border-white/10 rounded-2xl text-white placeholder-slate-600 focus:outline-none focus:border-[#5dfeca] transition-all text-sm font-medium"
+                  required
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute inset-y-0 right-0 pr-4 flex items-center text-slate-500 hover:text-[#5dfeca] transition-colors"
+                >
+                  {showPassword ? (
+                    <VisibilityOff fontSize="small" />
+                  ) : (
+                    <Visibility fontSize="small" />
+                  )}
+                </button>
+              </div>
+            </div>
+
+            {/* Submit Button */}
+            <button
+              type="submit"
+              disabled={isLoading}
+              className="w-full flex items-center justify-center py-4 px-4 bg-[#5dfeca] hover:shadow-[0_0_30px_rgba(93,254,202,0.4)] text-black font-black uppercase text-xs tracking-[0.2em] rounded-2xl disabled:opacity-50 transition-all active:scale-[0.98]"
+            >
+              {isLoading ? (
+                <span className="w-5 h-5 border-2 border-black/30 border-t-black rounded-full animate-spin" />
+              ) : (
+                "Login"
+              )}
+            </button>
+          </form>
+        </div>
       </div>
 
-      {/* Form Section */}
-      <div className="p-8 pt-0">
-        {/* Error Alert Box */}
-        {errorMessage && (
-          <div className="mb-6 p-3 rounded-xl bg-red-50 border border-red-100 flex items-start gap-3 text-red-600 text-sm animate-in fade-in slide-in-from-top-2">
-            <ErrorOutline fontSize="small" className="mt-0.5 shrink-0" />
-            <span className="font-medium">{errorMessage}</span>
-          </div>
-        )}
-
-        <form onSubmit={handleSubmit} className="space-y-5">
-          {/* Email Input */}
-          <div className="space-y-1.5">
-            <label
-              htmlFor="email"
-              className="text-sm font-semibold text-slate-700"
-            >
-              Email Address
-            </label>
-            <div className="relative group">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400 group-focus-within:text-indigo-500 transition-colors">
-                <Email fontSize="small" />
-              </div>
-              <input
-                id="email"
-                type="email"
-                value={formData.email}
-                onChange={handleChange}
-                placeholder="you@example.com"
-                className="block w-full pl-10 pr-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all text-sm font-medium"
-                required
-              />
-            </div>
-          </div>
-
-          {/* Password Input */}
-          <div className="space-y-1.5">
-            <div className="flex items-center justify-between">
-              <label
-                htmlFor="password"
-                className="text-sm font-semibold text-slate-700"
-              >
-                Password
-              </label>
-              <Link
-                href="/forgot-password"
-                className="text-xs font-semibold text-indigo-600 hover:text-indigo-700 hover:underline"
-              >
-                Forgot Password?
-              </Link>
-            </div>
-            <div className="relative group">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400 group-focus-within:text-indigo-500 transition-colors">
-                <Lock fontSize="small" />
-              </div>
-              <input
-                id="password"
-                type={showPassword ? "text" : "password"}
-                value={formData.password}
-                onChange={handleChange}
-                placeholder="••••••••"
-                className="block w-full pl-10 pr-10 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all text-sm font-medium"
-                required
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 cursor-pointer"
-              >
-                {showPassword ? (
-                  <VisibilityOff fontSize="small" />
-                ) : (
-                  <Visibility fontSize="small" />
-                )}
-              </button>
-            </div>
-          </div>
-
-          {/* Submit Button */}
-          <button
-            type="submit"
-            disabled={isLoading}
-            className="w-full flex items-center justify-center py-2.5 px-4 border border-transparent rounded-xl shadow-sm text-sm font-bold text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-70 disabled:cursor-not-allowed transition-all"
-          >
-            {isLoading ? (
-              <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-            ) : (
-              "Sign In"
-            )}
-          </button>
-        </form>
+      <div className="text-center mt-8">
+        <Link
+          href="/"
+          className="text-[10px] font-black text-slate-500 hover:text-white uppercase tracking-[0.2em] transition-colors"
+        >
+          ← Return to Community Hub
+        </Link>
       </div>
     </div>
   );
 };
+
 export default LoginPage;

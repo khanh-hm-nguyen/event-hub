@@ -34,8 +34,17 @@ export async function POST(req: NextRequest) {
 }
 
 // return all events
-export async function GET() {
+export async function GET(req: NextRequest) {
   try {
+    // only allow admin to create event
+    const user = getDataFromToken(req);
+
+    if (!user || user.role !== "admin") {
+      return NextResponse.json(
+        { message: "Forbidden. Admin access required." },
+        { status: 403 }
+      );
+    }
     await connectDB();
 
     const events = await eventService.getAllEvents();

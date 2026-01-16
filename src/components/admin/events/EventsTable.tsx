@@ -75,7 +75,7 @@ const EventsTable = ({
                     />
                   </div>
                   <div>
-                    <p className="font-extrabold text-slate-900 text-base leading-tight group-hover:text-indigo-600 transition-colors">
+                    <p className="font-extrabold text-slate-900 text-base leading-tight group-hover:text-teal-600 transition-colors">
                       {event.title}
                     </p>
                     <p className="text-xs font-medium text-slate-400 mt-1">
@@ -88,7 +88,7 @@ const EventsTable = ({
                 <div className="flex items-center gap-2 text-slate-700 font-bold">
                   <CalendarMonth
                     style={{ fontSize: 16 }}
-                    className="text-indigo-400"
+                    className="text-teal-400"
                   />
                   <span>{event.date}</span>
                 </div>
@@ -106,7 +106,7 @@ const EventsTable = ({
                   <div className="flex items-center gap-1 border-l border-slate-200 pl-3">
                     <button
                       onClick={() => onEdit(event)}
-                      className="w-9 h-9 flex items-center justify-center text-slate-400 hover:text-indigo-600 hover:bg-white hover:shadow-sm rounded-xl transition-all"
+                      className="w-9 h-9 flex items-center justify-center text-slate-400 hover:text-teal-600 hover:bg-white hover:shadow-sm rounded-xl transition-all"
                     >
                       <Edit style={{ fontSize: 18 }} />
                     </button>
