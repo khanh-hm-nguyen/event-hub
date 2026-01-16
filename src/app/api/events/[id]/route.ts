@@ -5,13 +5,13 @@ import connectDB from "@/lib/mongodb";
 import { Event } from "@/models";
 
 import { getDataFromToken } from "@/utils/getDataFromToken";
+import { handleCommonErrors } from "@/utils/errorHandler";
 
 type RouteParams = {
   params: Promise<{
     id: string;
   }>;
 };
-
 
 /**
  * GET /api/events/[id]
@@ -46,36 +46,9 @@ export async function GET(
       { status: 200 }
     );
   } catch (error) {
-    // Log error for debugging (only in development)
-    if (process.env.NODE_ENV === "development") {
-      console.error("Error fetching events by slug:", error);
-    }
-
-    // Handle specific error types
-    if (error instanceof Error) {
-      // Handle database connection errors
-      if (error.message.includes("MONGODB_URI")) {
-        return NextResponse.json(
-          { message: "Database configuration error" },
-          { status: 500 }
-        );
-      }
-
-      // Return generic error with error message
-      return NextResponse.json(
-        { message: "Failed to fetch events", error: error.message },
-        { status: 500 }
-      );
-    }
-
-    // Handle unknown errors
-    return NextResponse.json(
-      { message: "An unexpected error occurred" },
-      { status: 500 }
-    );
+    return handleCommonErrors(error);
   }
 }
-
 
 /**
  * PUT /api/events/[id]
@@ -86,7 +59,6 @@ export async function PUT(
   { params }: RouteParams
 ): Promise<NextResponse> {
   try {
-
     // only allow admin to update event
     const user = getDataFromToken(req);
 
@@ -120,33 +92,7 @@ export async function PUT(
       { status: 200 }
     );
   } catch (error) {
-   // Log error for debugging (only in development)
-    if (process.env.NODE_ENV === "development") {
-      console.error("Error fetching events by slug:", error);
-    }
-
-    // Handle specific error types
-    if (error instanceof Error) {
-      // Handle database connection errors
-      if (error.message.includes("MONGODB_URI")) {
-        return NextResponse.json(
-          { message: "Database configuration error" },
-          { status: 500 }
-        );
-      }
-
-      // Return generic error with error message
-      return NextResponse.json(
-        { message: "Failed to fetch events", error: error.message },
-        { status: 500 }
-      );
-    }
-
-    // Handle unknown errors
-    return NextResponse.json(
-      { message: "An unexpected error occurred" },
-      { status: 500 }
-    );
+    return handleCommonErrors(error);
   }
 }
 
@@ -186,32 +132,6 @@ export async function DELETE(
       { status: 200 }
     );
   } catch (error) {
-    // Log error for debugging (only in development)
-    if (process.env.NODE_ENV === "development") {
-      console.error("Error fetching events by slug:", error);
-    }
-
-    // Handle specific error types
-    if (error instanceof Error) {
-      // Handle database connection errors
-      if (error.message.includes("MONGODB_URI")) {
-        return NextResponse.json(
-          { message: "Database configuration error" },
-          { status: 500 }
-        );
-      }
-
-      // Return generic error with error message
-      return NextResponse.json(
-        { message: "Failed to fetch events", error: error.message },
-        { status: 500 }
-      );
-    }
-
-    // Handle unknown errors
-    return NextResponse.json(
-      { message: "An unexpected error occurred" },
-      { status: 500 }
-    );
+    return handleCommonErrors(error);
   }
 }

@@ -1,100 +1,132 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useEffect, useState } from "react";
 import { Add } from "@mui/icons-material";
-
-import { IEvent } from "@/models";
+import { useResource } from "@/app/hooks/useResource";
 import EventsTable from "@/components/admin/events/EventsTable";
-import CreateEventModal from "@/components/admin/events/CreateEventModal";
+// Import our new Reusable Modal
+import EventFormModal, { EventFormState } from "@/components/admin/events/EventFormModal";
+import { IEvent } from "@/models";
 
+// Define strict types for your frontend events
+interface IEventFrontend extends Omit<IEvent, '_id'> {
+  _id: string;
+}
 const AdminEventsPage = () => {
- const [events, setEvents] = useState<IEvent[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const { items: events, isLoading, error, fetchItems, createItem, deleteItem } = 
+    useResource<IEventFrontend>("/api/events", "events");
+
+  // State for Modal
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [error, setError] = useState("");
+  const [editingEvent, setEditingEvent] = useState<EventFormState | null>(null);
+  const [editingId, setEditingId] = useState<string | null>(null);
 
-  const fetchEvents = useCallback(async () => {
-    setIsLoading(true);
-    try {
-      const res = await fetch("/api/events");
-      const data = await res.json();
-      if (res.ok) {
-        setEvents(data.events);
-      } else {
-        throw new Error(data.message);
-      }
-    } catch (err) {
-      setError("Failed to load events");
-      console.error(err);
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
+  useEffect(() => { fetchItems(); }, [fetchItems]);
 
-  useEffect(() => {
-    fetchEvents();
-  }, [fetchEvents]);
+  // --- Handlers ---
 
   const handleDelete = async (id: string) => {
-    if (!confirm("Are you sure you want to delete this event? This action cannot be undone.")) return;
-
-    try {
-      const res = await fetch(`/api/events/${id}`, { method: "DELETE" });
-      if (res.ok) {
-        // Optimistic update
-        setEvents((prev) => prev.filter((e) => (e._id).toString() !== id));
-      } else {
-        alert("Failed to delete event");
-      }
-    } catch (err) {
-      alert("Error deleting event");
-    }
+    if (confirm("Delete this event?")) await deleteItem(id);
   };
 
-  const handleEdit = (event: IEvent) => {
-    // For now, alert the user, as the PUT API requires simple JSON body 
-    // but full editing usually needs image replacement logic which differs from the CREATE flow.
-    alert(`Editing logic for "${event.title}" would go here. (Requires implementing PUT form)`);
+  const handleEditClick = (event: IEventFrontend) => {
+    // Populate the modal with this event's data
+    setEditingEvent(event); 
+    setEditingId(event._id);
+    setIsModalOpen(true);
+  };
+
+  const handleCreateClick = () => {
+    setEditingEvent(null); // Clear data for fresh create
+    setEditingId(null);
+    setIsModalOpen(true);
+  };
+
+  // The Magic: One submit handler for both
+  const handleFormSubmit = async (data: EventFormState) => {
+    
+    if (editingId) {
+      // --- EDIT MODE (Send JSON) ---
+      // Your Edit API likely expects JSON, not FormData (based on previous chats)
+      const payload = {
+        ...data,
+        tags: data.tags?.filter(t => t.trim() !== ""),
+        agenda: data.agenda?.filter(a => a.trim() !== ""),
+        // Note: We often strip the 'image' field here if it wasn't changed
+        // or if your Edit API doesn't support file uploads yet.
+      };
+
+      try {
+        const res = await fetch(`/api/events/${editingId}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload)
+        });
+        if(!res.ok) throw new Error("Failed to update");
+        
+        await fetchItems(); // Refresh
+        setIsModalOpen(false);
+      } catch (err) {
+        alert("Update failed");
+      }
+
+    } else {
+      // --- CREATE MODE (Send FormData) ---
+      const formData = new FormData();
+      
+      // Helper to append data
+      (Object.keys(data) as Array<keyof EventFormState>).forEach(key => {
+        if (key !== "tags" && key !== "agenda" && key !== "image") {
+          // @ts-ignore
+          formData.append(key, data[key]);
+        }
+      });
+
+      // Handle File
+      if (data.image instanceof File) {
+        formData.append("image", data.image);
+      }
+
+      // Handle Arrays
+      formData.append("tags", JSON.stringify(data.tags?.filter(t => t.trim() !== "")));
+      formData.append("agenda", JSON.stringify(data.agenda?.filter(a => a.trim() !== "")));
+
+      // Use your hook
+      const success = await createItem(formData, false);
+      if (success) setIsModalOpen(false);
+    }
   };
 
   return (
     <div className="space-y-8">
       {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl md:text-3xl font-bold text-slate-900">Events Management</h1>
-          <p className="text-slate-500 mt-1">View, create, and manage your upcoming events.</p>
-        </div>
-        <button 
-          onClick={() => setIsModalOpen(true)}
-          className="flex items-center gap-2 bg-indigo-600 text-white px-5 py-2.5 rounded-xl text-sm font-bold hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-200"
-        >
+      <div className="flex justify-between items-center">
+        <h1 className="text-2xl font-bold">Events Management</h1>
+        <button onClick={handleCreateClick} className="bg-indigo-600 text-white px-4 py-2 rounded-lg flex gap-2 items-center">
           <Add fontSize="small" /> Create Event
         </button>
       </div>
 
-      {/* Error State */}
-      {error && (
-        <div className="p-4 bg-red-50 text-red-600 rounded-xl border border-red-100">
-          {error}
-        </div>
-      )}
+      {error && <div className="text-red-500">{error}</div>}
 
-      {/* Events Table */}
       <EventsTable 
         events={events} 
         isLoading={isLoading} 
-        onDelete={handleDelete}
-        onEdit={handleEdit}
+        onDelete={handleDelete} 
+        onEdit={handleEditClick} 
       />
 
-      {/* Create Modal */}
-      <CreateEventModal 
-        isOpen={isModalOpen} 
-        onClose={() => setIsModalOpen(false)} 
-        onSuccess={fetchEvents}
+      {/* The Reusable Modal */}
+      <EventFormModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        isLoading={isLoading}
+        initialData={editingEvent} // Pass data if editing, null if creating
+        onSubmit={handleFormSubmit}
+        title={editingEvent ? "Edit Event" : "Create New Event"}
       />
     </div>
   );
-}
-export default AdminEventsPage
+};
+
+export default AdminEventsPage;

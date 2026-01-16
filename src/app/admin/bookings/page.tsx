@@ -1,9 +1,11 @@
-import React from 'react'
+import BookingPage from "@/components/admin/boookings/BookingPage";
 
 const page = () => {
   return (
-    <div>page</div>
-  )
-}
+    <>
+      <BookingPage />
+    </>
+  );
+};
 
-export default page
+export default page;

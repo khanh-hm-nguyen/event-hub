@@ -1,92 +1,68 @@
 import { NextRequest, NextResponse } from "next/server";
-import bcrypt from "bcryptjs";
 import connectDB from "@/lib/mongodb";
-import { User } from "@/models";
+import { Booking } from "@/models";
+import { getDataFromToken } from "@/utils/getDataFromToken";
+import { handleCommonErrors } from "@/utils/errorHandler";
 
-/**
- * POST /api/auth/register
- * Creates a new user (Registration)
- */
+// Get all bookings
+export async function GET(req: NextRequest) {
+  try {
+    // only allow admin to get booking
+    const user = getDataFromToken(req);
+
+    if (!user || user.role !== "admin") {
+      return NextResponse.json(
+        { message: "Forbidden. Admin access required." },
+        { status: 403 }
+      );
+    }
+
+    await connectDB();
+
+    const bookings = await Booking.find()
+      .populate("eventId", "title date")
+      .sort({ createdAt: -1 });
+
+    return NextResponse.json(
+      { message: "Bookings fetched successfully", bookings },
+      { status: 200 }
+    );
+  } catch (error) {
+    return handleCommonErrors(error);
+  }
+}
+
 export async function POST(req: NextRequest) {
   try {
     await connectDB();
 
-    const { name, email, password } = await req.json();
+    const body = await req.json();
+    const { eventId, email } = body;
 
-    // basic Validation
-    if (!name || !email || !password) {
+    // 1. Basic Validation
+    if (!eventId || !email) {
       return NextResponse.json(
-        {
-          message: "Please provide all required fields (name, email, password)",
-        },
+        { message: "Please provide both Event ID and Email" },
         { status: 400 }
       );
     }
 
-    // check if user already exists
-    const userExists = await User.findOne({ email: email.toLowerCase() });
-
-    if (userExists) {
-      return NextResponse.json(
-        { message: "User with this email already exists" },
-        { status: 409 } // 409 Conflict
-      );
-    }
-
-    // hash the password
-    // 10 is the 'salt rounds' - a balance between security and speed
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
-
-    // create the User
-    // prevents malicious users from sending role: "admin" in the JSON body.
-    const newUser = await User.create({
-      name,
+    // 2. Create Booking
+    const newBooking = await Booking.create({
+      eventId,
       email: email.toLowerCase(),
-      password: hashedPassword,
     });
 
-    // return success (excluding password)
-    // create a clean object to return to the frontend
+    // 3. Return Success
     return NextResponse.json(
       {
-        message: "User registered successfully",
-        user: {
-          _id: newUser._id,
-          name: newUser.name,
-          email: newUser.email,
-          role: newUser.role,
-        },
+        message:
+          "Booking successful! detailed information has been sent to your email.",
+        booking: newBooking,
       },
       { status: 201 }
     );
   } catch (error) {
-    // Log error for debugging (only in development)
-    if (process.env.NODE_ENV === "development") {
-      console.error("Error fetching events by slug:", error);
-    }
-
-    // Handle specific error types
-    if (error instanceof Error) {
-      // Handle database connection errors
-      if (error.message.includes("MONGODB_URI")) {
-        return NextResponse.json(
-          { message: "Database configuration error" },
-          { status: 500 }
-        );
-      }
-
-      // Return generic error with error message
-      return NextResponse.json(
-        { message: "Failed to fetch events", error: error.message },
-        { status: 500 }
-      );
-    }
-
-    // Handle unknown errors
-    return NextResponse.json(
-      { message: "An unexpected error occurred" },
-      { status: 500 }
-    );
+    return handleCommonErrors(error);
   }
 }

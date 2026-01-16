@@ -1,13 +1,17 @@
 "use client";
 
 import { Edit, Delete, CalendarMonth, LocationOn } from "@mui/icons-material";
-import { IEvent } from "@/models";
+import type { IEvent } from "@/models";
 import Image from "next/image";
 
+// define ID is string
+type IEventFrontend = Omit<IEvent, "_id"> & { _id: string };
+
 interface EventsTableProps {
-  events: IEvent[];
+  //  props
+  events: IEventFrontend[];
   isLoading: boolean;
-  onEdit: (event: IEvent) => void;
+  onEdit: (event: IEventFrontend) => void;
   onDelete: (id: string) => void;
 }
 
@@ -60,7 +64,7 @@ const EventsTable = ({
           <tbody className="divide-y divide-slate-100">
             {events.map((event) => (
               <tr
-                key={event._id.toString()}
+                key={event._id}
                 className="hover:bg-slate-50/50 transition-colors"
               >
                 <td className="px-6 py-4">
@@ -138,7 +142,7 @@ const EventsTable = ({
                       <Edit fontSize="small" />
                     </button>
                     <button
-                      onClick={() => onDelete(event._id.toString())}
+                      onClick={() => onDelete(event._id)}
                       className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
                       title="Delete Event"
                     >
