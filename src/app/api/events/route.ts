@@ -1,10 +1,24 @@
+//api/events/route.ts
+
 import connectDB from "@/lib/mongodb";
 import { NextRequest, NextResponse } from "next/server";
 import { Event } from "@/models";
 import { v2 as cloudinary } from "cloudinary";
+import { getDataFromToken } from "@/utils/getDataFromToken";
+import { handleCommonErrors } from "@/utils/errorHandler";
 
 export async function POST(req: NextRequest) {
   try {
+    // only allow admin to create event
+    const user = getDataFromToken(req);
+
+    if (!user || user.role !== "admin") {
+      return NextResponse.json(
+        { message: "Forbidden. Admin access required." },
+        { status: 403 }
+      );
+    }
+
     await connectDB();
 
     const formData = await req.formData();
@@ -59,15 +73,8 @@ export async function POST(req: NextRequest) {
       { message: "Event created successfully", event: createdEvent },
       { status: 201 }
     );
-  } catch (e) {
-    console.error(e);
-    return NextResponse.json(
-      {
-        message: "Event Creation Failed",
-        error: e instanceof Error ? e.message : "Unknown",
-      },
-      { status: 500 }
-    );
+  } catch (error) {
+    return handleCommonErrors(error);
   }
 }
 
@@ -81,10 +88,7 @@ export async function GET() {
       { message: "Events fetched successfully", events },
       { status: 200 }
     );
-  } catch (e) {
-    return NextResponse.json(
-      { message: "Event fetching failed", error: e },
-      { status: 500 }
-    );
+  } catch (error) {
+    return handleCommonErrors(error);
   }
 }

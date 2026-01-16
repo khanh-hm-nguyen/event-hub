@@ -3,6 +3,7 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken"; 
 import connectDB from "@/lib/mongodb";
 import { User } from "@/models";
+import { handleCommonErrors } from "@/utils/errorHandler";
 
 export async function POST(req: NextRequest) {
   try {
@@ -76,10 +77,6 @@ export async function POST(req: NextRequest) {
     return response;
 
   } catch (error) {
-    console.error("Login Error:", error);
-    return NextResponse.json(
-      { message: "Internal Server Error" },
-      { status: 500 }
-    );
+     return handleCommonErrors(error);
   }
 }

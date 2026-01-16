@@ -1,7 +1,10 @@
+//api/events/slug/[slug]/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 
 import connectDB from '@/lib/mongodb';
 import { Event } from '@/models';
+
+import { handleCommonErrors } from '@/utils/errorHandler';
 
 // Define route params type for type safety
 type RouteParams = {
@@ -53,32 +56,6 @@ export async function GET(
       { status: 200 }
     );
   } catch (error) {
-    // Log error for debugging (only in development)
-    if (process.env.NODE_ENV === 'development') {
-      console.error('Error fetching events by slug:', error);
-    }
-
-    // Handle specific error types
-    if (error instanceof Error) {
-      // Handle database connection errors
-      if (error.message.includes('MONGODB_URI')) {
-        return NextResponse.json(
-          { message: 'Database configuration error' },
-          { status: 500 }
-        );
-      }
-
-      // Return generic error with error message
-      return NextResponse.json(
-        { message: 'Failed to fetch events', error: error.message },
-        { status: 500 }
-      );
-    }
-
-    // Handle unknown errors
-    return NextResponse.json(
-      { message: 'An unexpected error occurred' },
-      { status: 500 }
-    );
+    return handleCommonErrors(error)
   }
 }

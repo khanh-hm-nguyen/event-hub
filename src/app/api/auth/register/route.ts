@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import connectDB from "@/lib/mongodb";
 import { User } from "@/models";
+import { handleCommonErrors } from "@/utils/errorHandler";
 
 /**
  * POST /api/auth/register
@@ -61,32 +62,6 @@ export async function POST(req: NextRequest) {
       { status: 201 }
     );
   } catch (error) {
-    // Log error for debugging (only in development)
-    if (process.env.NODE_ENV === "development") {
-      console.error("Error fetching events by slug:", error);
-    }
-
-    // Handle specific error types
-    if (error instanceof Error) {
-      // Handle database connection errors
-      if (error.message.includes("MONGODB_URI")) {
-        return NextResponse.json(
-          { message: "Database configuration error" },
-          { status: 500 }
-        );
-      }
-
-      // Return generic error with error message
-      return NextResponse.json(
-        { message: "Failed to fetch events", error: error.message },
-        { status: 500 }
-      );
-    }
-
-    // Handle unknown errors
-    return NextResponse.json(
-      { message: "An unexpected error occurred" },
-      { status: 500 }
-    );
+    return handleCommonErrors(error);
   }
 }
