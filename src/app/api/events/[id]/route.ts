@@ -7,6 +7,8 @@ import { Event } from "@/models";
 import { getDataFromToken } from "@/utils/getDataFromToken";
 import { handleCommonErrors } from "@/utils/errorHandler";
 
+import { eventService } from "@/services/event.service";
+
 type RouteParams = {
   params: Promise<{
     id: string;
@@ -30,7 +32,7 @@ export async function GET(
     const id = (await params).id;
 
     // Query events by slug
-    const event = await Event.findById(id).lean();
+    const event = await eventService.getEventById(id);
 
     // Handle events not found
     if (!event) {

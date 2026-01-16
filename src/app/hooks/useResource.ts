@@ -1,73 +1,86 @@
 import { useState, useCallback } from "react";
 
-// Generic Type T = The interface of your data (IEvent, IBooking, etc.)
 export const useResource = <T extends { _id: string }>(
-  endpoint: string, 
-  dataKey: string   
+  endpoint: string,
+  dataKey: string
 ) => {
   const [items, setItems] = useState<T[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
 
-  // 1. GET (Fetch All)
   const fetchItems = useCallback(async () => {
     setIsLoading(true);
-    setError("");
     try {
       const res = await fetch(endpoint);
-      const data = await res.json();
-      
-      if (!res.ok) throw new Error(data.message || `Failed to fetch ${dataKey}`);
-      
-      // Dynamic access: data['events'] or data['bookings']
-      setItems(data[dataKey] || []); 
-    } catch (err) {
-      setError("error");
-      console.error(err);
+      const data = (await res.json()) as Record<string, unknown>;
+      if (!res.ok) throw new Error((data.message as string) || "Fetch failed");
+      setItems((data[dataKey] as T[]) || []);
+    } catch (err: any) {
+      setError(err.message);
     } finally {
       setIsLoading(false);
     }
   }, [endpoint, dataKey]);
 
-  // 2. POST (Create)
-  // We accept payload as BodyInit (FormData or stringified JSON)
-  // isJson tells us if we need to set Content-Type header
-  const createItem = async (payload: BodyInit, isJson: boolean = false): Promise<boolean> => {
+  const createItem = async (payload: BodyInit, isJson: boolean = false) => {
     setIsLoading(true);
-    setError("");
     try {
-      const headers: HeadersInit = isJson ? { "Content-Type": "application/json" } : {};
-
+      const headers: HeadersInit = isJson
+        ? { "Content-Type": "application/json" }
+        : {};
       const res = await fetch(endpoint, {
         method: "POST",
         headers,
         body: payload,
       });
-
       const data = await res.json();
-      if (!res.ok) throw new Error(data.message || "Failed to create item");
-
-      await fetchItems(); // Refresh list
+      if (!res.ok) throw new Error(data.message);
+      await fetchItems();
       return true;
-    } catch (err) {
-      setError("Error");
+    } catch (err: any) {
+      setError(err.message);
       return false;
     } finally {
       setIsLoading(false);
     }
   };
 
-  // 3. DELETE
-  const deleteItem = async (id: string): Promise<boolean> => {
+  // --- NEW: Update Item ---
+  const updateItem = async (
+    id: string,
+    payload: BodyInit,
+    isJson: boolean = false
+  ) => {
+    setIsLoading(true);
+    try {
+      const headers: HeadersInit = isJson
+        ? { "Content-Type": "application/json" }
+        : {};
+      const res = await fetch(`${endpoint}/${id}`, {
+        method: "PUT",
+        headers,
+        body: payload,
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message);
+      await fetchItems();
+      return true;
+    } catch (err: any) {
+      setError(err.message);
+      return false;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const deleteItem = async (id: string) => {
     try {
       const res = await fetch(`${endpoint}/${id}`, { method: "DELETE" });
-      if (!res.ok) throw new Error("Failed to delete item");
-
-      // Optimistic update
+      if (!res.ok) throw new Error("Failed to delete");
       setItems((prev) => prev.filter((item) => item._id !== id));
       return true;
-    } catch (err) {
-      alert("Error");
+    } catch (err: any) {
+      alert(err.message);
       return false;
     }
   };
@@ -78,6 +91,7 @@ export const useResource = <T extends { _id: string }>(
     error,
     fetchItems,
     createItem,
+    updateItem,
     deleteItem,
   };
 };

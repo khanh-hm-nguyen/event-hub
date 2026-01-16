@@ -32,6 +32,10 @@ export async function GET(req: NextRequest) {
   }
 }
 
+/**
+ * POST /api/bookings
+ * Public: Creates a new booking
+ */
 export async function POST(req: NextRequest) {
   try {
     await connectDB();
