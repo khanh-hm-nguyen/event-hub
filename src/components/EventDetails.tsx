@@ -1,10 +1,11 @@
 import { notFound } from "next/navigation";
 import Image from "next/image";
-const BASE_URL = process.env.PUBLIC_BASE_URL;
 import { IEvent } from "@/models";
 import BookEvent from "./BookEvent";
 import EventCard from "./EventCard";
-import { getSimilarEventsBySlug } from "@/lib/actions/event.action";
+
+
+import { getEventBySlug, getSimilarEventsBySlug } from "@/actions/event.action";
 
 const EventDetailItem = ({
   icon,
@@ -42,30 +43,17 @@ const EventTags = ({ tags }: { tags: string[] }) => (
   </div>
 );
 
-const EventDetails = async ({ params }: { params: Promise<{ slug: string }> }) => {
+const EventDetails = async ({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) => {
   const { slug } = await params;
 
-  let event;
-  try {
-    const request = await fetch(`${BASE_URL}/api/events/${slug}`, {
-      next: { revalidate: 60 },
-    });
+  // get event from server action
+  const event = await getEventBySlug(slug);
 
-    if (!request.ok) {
-      if (request.status === 404) {
-        return notFound();
-      }
-      throw new Error(`Failed to fetch event: ${request.statusText}`);
-    }
-
-    const response = await request.json();
-    event = response.event;
-
-    if (!event) {
-      return notFound();
-    }
-  } catch (error) {
-    console.error("Error fetching event:", error);
+  if (!event) {
     return notFound();
   }
 
@@ -85,8 +73,10 @@ const EventDetails = async ({ params }: { params: Promise<{ slug: string }> }) =
 
   if (!description) return notFound();
 
+  // You might want to fetch real booking counts later, for now keeping static
   const bookings = 10;
 
+  // return similar events by slug
   const similarEvents: IEvent[] = await getSimilarEventsBySlug(slug);
 
   return (
@@ -97,7 +87,7 @@ const EventDetails = async ({ params }: { params: Promise<{ slug: string }> }) =
       </div>
 
       <div className="details">
-        {/*    Left Side - Event Content */}
+        {/* Left Side - Event Content */}
         <div className="content">
           <Image
             src={image}
@@ -105,6 +95,7 @@ const EventDetails = async ({ params }: { params: Promise<{ slug: string }> }) =
             width={800}
             height={800}
             className="banner"
+            priority // Optimization: Load banner eagerly
           />
 
           <section className="flex-col-gap-2">
@@ -114,7 +105,6 @@ const EventDetails = async ({ params }: { params: Promise<{ slug: string }> }) =
 
           <section className="flex-col-gap-2">
             <h2>Event Details</h2>
-
             <EventDetailItem
               icon="/icons/calendar.svg"
               alt="calendar"
@@ -140,7 +130,7 @@ const EventDetails = async ({ params }: { params: Promise<{ slug: string }> }) =
           <EventTags tags={tags} />
         </div>
 
-        {/*    Right Side - Booking Form */}
+        {/* Right Side - Booking Form */}
         <aside className="booking">
           <div className="signup-card">
             <h2>Book Your Spot</h2>
@@ -152,7 +142,8 @@ const EventDetails = async ({ params }: { params: Promise<{ slug: string }> }) =
               <p className="text-sm">Be the first to book your spot!</p>
             )}
 
-            <BookEvent eventId={event._id} slug={event.slug} />
+            {/* Ensure BookEvent can handle the ID format (string vs ObjectId) */}
+            <BookEvent eventId={event._id as string} slug={event.slug} />
           </div>
         </aside>
       </div>

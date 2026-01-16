@@ -1,10 +1,12 @@
 //api/events/slug/[slug]/route.ts
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from "next/server";
 
-import connectDB from '@/lib/mongodb';
-import { Event } from '@/models';
+import connectDB from "@/lib/mongodb";
+import { Event } from "@/models";
 
-import { handleCommonErrors } from '@/utils/errorHandler';
+import { handleCommonErrors } from "@/utils/errorHandler";
+
+import { eventService } from "@/services/event.service";
 
 // Define route params type for type safety
 type RouteParams = {
@@ -28,34 +30,22 @@ export async function GET(
     // Await and extract slug from params
     const { slug } = await params;
 
-    // Validate slug parameter
-    if (!slug || typeof slug !== 'string' || slug.trim() === '') {
-      return NextResponse.json(
-        { message: 'Invalid or missing slug parameter' },
-        { status: 400 }
-      );
-    }
-
-    // Sanitize slug (remove any potential malicious input)
-    const sanitizedSlug = slug.trim().toLowerCase();
-
-    // Query events by slug
-    const event = await Event.findOne({ slug: sanitizedSlug }).lean();
+    const event = eventService.getEventBySlug(slug);
 
     // Handle events not found
     if (!event) {
       return NextResponse.json(
-        { message: `Event with slug '${sanitizedSlug}' not found` },
+        { message: `Event with slug not found` },
         { status: 404 }
       );
     }
 
     // Return successful response with events data
     return NextResponse.json(
-      { message: 'Event fetched successfully', event },
+      { message: "Event fetched successfully", event },
       { status: 200 }
     );
   } catch (error) {
-    return handleCommonErrors(error)
+    return handleCommonErrors(error);
   }
 }

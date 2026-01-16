@@ -6,15 +6,9 @@ const EventDetailsPage = async ({
 }: {
   params: Promise<{ slug: string }>;
 }) => {
-  // const slug = params.then((p) => p.slug);
-
   return (
     <main>
       <EventDetails params={params} />
-      {/* <Suspense fallback={<div>Loading...</div>}>
-            
-                <EventDetails params={params} /> 
-            </Suspense> */}
     </main>
   );
 };

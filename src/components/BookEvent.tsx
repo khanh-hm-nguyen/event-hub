@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { createBooking } from "@/lib/actions/booking.action";
+import { createBooking } from "@/actions/booking.action";
 
 const BookEvent = ({ eventId, slug }: { eventId: string; slug: string }) => {
   const [email, setEmail] = useState("");

@@ -1,12 +1,10 @@
 import ExploreBtn from "@/components/ExploreBtn";
 import EventCard from "@/components/EventCard";
 import { IEvent } from "@/models";
-const BASE_URL = process.env.PUBLIC_BASE_URL;
-
+import { getAllEvents } from "@/actions/event.action";
 const page = async () => {
-  const response = await fetch(`${BASE_URL}/api/events`);
-
-  const { events } = await response.json();
+  
+  const events = await getAllEvents();
 
   return (
     <section>
