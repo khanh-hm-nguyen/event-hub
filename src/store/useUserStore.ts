@@ -26,8 +26,6 @@ export const useUserStore = create<UserState>()(
       clearUser: () => {
         console.log("Zustand: Clearing user state");
         set({ user: null });
-        // Optional: The persist middleware handles storage automatically, 
-        // but this ensures a clean slate on sign-out
         useUserStore.persist.clearStorage(); 
       },
 

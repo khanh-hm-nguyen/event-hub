@@ -5,6 +5,7 @@
 import { Event } from "@/models";
 import connectDB from "@/lib/mongodb";
 import { eventService } from "@/services/event.service";
+import { isAdmin } from "@/utils/getDataFromToken";
 
 export const getSimilarEventsBySlug = async (slug: string) => {
   try {
@@ -46,9 +47,14 @@ export const getEventBySlug = async (slug: string) => {
   }
 };
 
-
 export const getEventById = async (id: string) => {
   try {
+    // Verify Admin Role
+    const isAuthorized = await isAdmin();
+
+    if (!isAuthorized) {
+      throw new Error("Unauthorized: Admin access required");
+    }
     await connectDB();
 
     const event = await eventService.getEventById(id);
@@ -60,4 +66,4 @@ export const getEventById = async (id: string) => {
     console.error(`Failed to fetch event by slug (${id}):`, error);
     return [];
   }
-}
+};

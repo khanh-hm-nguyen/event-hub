@@ -5,7 +5,6 @@ import {
   Add,
   EventAvailable,
   ErrorOutline,
-  ChevronRight,
 } from "@mui/icons-material";
 import { useResource } from "@/hooks/useResource";
 import EventsTable from "@/components/admin/events/EventsTable";
@@ -19,6 +18,7 @@ interface IEventFrontend extends Omit<IEvent, "_id"> {
 }
 
 const AdminEventsPage = () => {
+  
   const {
     items: events,
     isLoading,

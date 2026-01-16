@@ -1,6 +1,4 @@
 import { NextRequest } from "next/server";
-// import jwt, { JwtPayload } from "jsonwebtoken";
-
 import jwt, { JwtPayload } from "jsonwebtoken";
 
 interface UserPayload extends JwtPayload {
@@ -28,5 +26,23 @@ export const getDataFromToken = (req: NextRequest): UserPayload | null => {
     }
 
     return null;
+  }
+};
+
+
+// actions/auth.helper.ts 
+import { cookies } from "next/headers";
+
+export const isAdmin = async () => {
+  try {
+    const cookieStore = await cookies();
+    const token = cookieStore.get("token")?.value;
+
+    if (!token) return false;
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as any;
+    return decoded.role === "admin";
+  } catch {
+    return false;
   }
 };

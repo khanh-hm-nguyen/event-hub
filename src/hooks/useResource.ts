@@ -45,7 +45,7 @@ export const useResource = <T extends { _id: string }>(
     }
   };
 
-  // --- NEW: Update Item ---
+  
   const updateItem = async (
     id: string,
     payload: BodyInit,
