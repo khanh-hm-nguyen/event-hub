@@ -44,7 +44,7 @@ const BookingsOverviewPage = async () => {
         {/* Quick Stats Cards */}
         <div className="flex gap-4">
           <div className="bg-white px-5 py-3 rounded-xl border border-slate-200 shadow-sm flex items-center gap-3">
-            <div className="p-2 bg-indigo-50 rounded-lg text-indigo-600">
+            <div className="p-2 bg-teal-50 rounded-lg text-teal-600">
               <Event fontSize="small" />
             </div>
             <div>
@@ -88,7 +88,7 @@ const BookingsOverviewPage = async () => {
                     {/* Column 1: Event Name & Date */}
                     <td className="px-6 py-4">
                       <div className="flex flex-col">
-                        <span className="font-bold text-slate-900 text-base mb-1 group-hover:text-indigo-700 transition-colors">
+                        <span className="font-bold text-slate-900 text-base mb-1 group-hover:text-teal-700 transition-colors">
                           {event.title}
                         </span>
                         {/* Optional: Show date if available */}
@@ -120,11 +120,11 @@ const BookingsOverviewPage = async () => {
                     <td className="px-6 py-4 text-right">
                       <Link
                         href={`/admin/bookings/${event._id}`}
-                        className="inline-flex items-center gap-2 text-sm font-medium text-slate-600 bg-white border border-slate-300 hover:border-indigo-500 hover:text-indigo-600 px-4 py-2 rounded-lg transition-all shadow-sm hover:shadow"
+                        className="inline-flex items-center gap-2 text-sm font-medium text-slate-600 bg-white border border-slate-300 hover:border-teal-500 hover:text-teal-600 px-4 py-2 rounded-lg transition-all shadow-sm hover:shadow"
                       >
                         <Visibility fontSize="small" /> 
                         <span>Manage</span>
-                        <ArrowForward fontSize="inherit" className="opacity-0 -ml-2 group-hover:opacity-100 group-hover:ml-0 transition-all text-indigo-400"/>
+                        <ArrowForward fontSize="inherit" className="opacity-0 -ml-2 group-hover:opacity-100 group-hover:ml-0 transition-all text-teal-400"/>
                       </Link>
                     </td>
                   </tr>

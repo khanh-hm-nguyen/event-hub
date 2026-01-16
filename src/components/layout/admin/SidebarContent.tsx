@@ -1,19 +1,35 @@
 import SidebarLink from "./SidebarLink";
 import { Dashboard, Event, BookOnline, Logout } from "@mui/icons-material";
 import { usePathname } from "next/navigation";
+import Link from "next/link";
+
+import { useRouter } from "next/navigation";
+import { useUserStore } from "@/store/useUserStore";
 
 const SidebarContent = () => {
-   const pathname = usePathname();
+  const pathname = usePathname();
+  const router = useRouter();
+  const clearUser = useUserStore((state) => state.clearUser);
+
+  const handleSignOut = async () => {
+    const res = await fetch("/api/auth/logout", { method: "POST" });
+    if (res.ok) {
+      useUserStore.getState().clearUser();
+      router.push("/login");
+    }
+  };
 
   return (
     <>
       <div className="h-16 flex items-center px-6 border-b border-slate-100">
-        <div className="flex items-center gap-2 text-indigo-600">
-          <Dashboard />
-          <span className="text-lg font-bold tracking-tight text-slate-900">
-            DevEvent
+        <Link href="/" className="flex items-center group">
+          <span className="text-2xl font-black text-[#051713] tracking-tighter uppercase transition-colors ">
+            Event
+            <span className="text-[#3dc59a] drop-shadow-[0_0_8px_rgba(93,254,202,0.5)]">
+              Hub
+            </span>
           </span>
-        </div>
+        </Link>
       </div>
 
       <nav className="flex-1 py-6 px-3 space-y-1">
@@ -40,14 +56,17 @@ const SidebarContent = () => {
         />
       </nav>
 
-      <div className="p-4 border-t border-slate-100">
-        <button className="flex items-center gap-3 w-full px-4 py-2.5 text-sm font-medium text-slate-600 hover:text-red-600 hover:bg-red-50 rounded-xl transition-colors">
-          <Logout fontSize="small" />
+      <div className="p-6 border-t border-white/5">
+        <button
+          onClick={handleSignOut}
+          className="flex items-center gap-3 w-full px-4 py-3 text-[11px] font-black text-slate-500 hover:text-rose-500 hover:bg-rose-500/10 rounded-2xl transition-all uppercase tracking-[0.2em]"
+        >
+          <Logout style={{ fontSize: 18 }} />
           Sign Out
         </button>
       </div>
     </>
-  )
-}
+  );
+};
 
-export default SidebarContent
+export default SidebarContent;

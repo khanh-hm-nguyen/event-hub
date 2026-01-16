@@ -69,12 +69,15 @@ const EventFormModal = ({
       if (initialData) {
         // We are editing: Fill the form
         setFormData({
-            ...initialData,
-            // Ensure dates are formatted YYYY-MM-DD for input type="date"
-            date: typeof initialData.date === 'string' ? initialData.date.split('T')[0] : initialData.date,
-            // Ensure arrays exist
-            tags: initialData.tags?.length ? initialData.tags : [""],
-            agenda: initialData.agenda?.length ? initialData.agenda : [""],
+          ...initialData,
+          // Ensure dates are formatted YYYY-MM-DD for input type="date"
+          date:
+            typeof initialData.date === "string"
+              ? initialData.date.split("T")[0]
+              : initialData.date,
+          // Ensure arrays exist
+          tags: initialData.tags?.length ? initialData.tags : [""],
+          agenda: initialData.agenda?.length ? initialData.agenda : [""],
         });
       } else {
         // We are creating: Reset to empty
@@ -137,7 +140,6 @@ const EventFormModal = ({
 
       // Pass the raw data to the parent. The parent decides how to format it (FormData vs JSON).
       await onSubmit(formData);
-      
     } catch (err: any) {
       setLocalError(err.message);
     }
@@ -166,7 +168,6 @@ const EventFormModal = ({
           )}
 
           <form id="event-form" onSubmit={handleSubmit} className="space-y-6">
-            
             {/* Image Upload */}
             <div className="space-y-2">
               <label className="text-sm font-semibold text-slate-700">
@@ -179,19 +180,24 @@ const EventFormModal = ({
                   onChange={handleFileChange}
                   className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
                 />
-                <div className="flex flex-col items-center gap-2 text-slate-500 group-hover:text-indigo-500 transition-colors">
-                  <CloudUpload fontSize="large" className="text-indigo-400 group-hover:text-indigo-500" />
+                <div className="flex flex-col items-center gap-2 text-slate-500 group-hover:text-teal-500 transition-colors">
+                  <CloudUpload
+                    fontSize="large"
+                    className="text-teal-400 group-hover:text-teal-500"
+                  />
                   <span className="text-sm font-medium">
                     {/* Display file name OR existing URL OR prompt */}
                     {formData.image instanceof File
                       ? formData.image.name
                       : typeof formData.image === "string"
-                      ? "Change Current Image" 
+                      ? "Change Current Image"
                       : "Click to upload image"}
                   </span>
                   {/* Show preview if editing and using existing image */}
                   {typeof formData.image === "string" && (
-                    <span className="text-xs text-slate-400">(Current image loaded)</span>
+                    <span className="text-xs text-slate-400">
+                      (Current image loaded)
+                    </span>
                   )}
                 </div>
               </div>
@@ -218,12 +224,14 @@ const EventFormModal = ({
             {/* Mode & Audience (MISSING IN PREVIOUS CODE) */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-1">
-                <label className="text-sm font-medium text-slate-600">Mode</label>
+                <label className="text-sm font-medium text-slate-600">
+                  Mode
+                </label>
                 <select
                   name="mode"
                   value={formData.mode}
                   onChange={handleChange}
-                  className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 bg-white"
+                  className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 bg-white"
                 >
                   <option value="offline">Offline</option>
                   <option value="online">Online</option>
@@ -288,7 +296,7 @@ const EventFormModal = ({
                 rows={2}
                 value={formData.description}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 resize-none"
+                className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 resize-none"
                 required
                 placeholder="Brief summary for cards..."
               />
@@ -304,7 +312,7 @@ const EventFormModal = ({
                 rows={5}
                 value={formData.overview}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 resize-none"
+                className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 resize-none"
                 required
                 placeholder="Detailed event information..."
               />
@@ -320,7 +328,7 @@ const EventFormModal = ({
                     onChange={(e) =>
                       handleArrayChange(idx, e.target.value, "tags")
                     }
-                    className="flex-1 px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-indigo-500"
+                    className="flex-1 px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-teal-500"
                     placeholder="e.g. React"
                   />
                   <button
@@ -335,7 +343,7 @@ const EventFormModal = ({
               <button
                 type="button"
                 onClick={() => modifyArraySize("tags", "add")}
-                className="text-xs font-bold text-indigo-600 flex items-center gap-1 hover:text-indigo-700"
+                className="text-xs font-bold text-teal-600 flex items-center gap-1 hover:text-teal-700"
               >
                 <Add fontSize="small" /> Add Tag
               </button>
@@ -353,7 +361,7 @@ const EventFormModal = ({
                     onChange={(e) =>
                       handleArrayChange(idx, e.target.value, "agenda")
                     }
-                    className="flex-1 px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-indigo-500"
+                    className="flex-1 px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-teal-500"
                     placeholder="e.g. 10:00 AM - Opening Ceremony"
                   />
                   <button
@@ -368,7 +376,7 @@ const EventFormModal = ({
               <button
                 type="button"
                 onClick={() => modifyArraySize("agenda", "add")}
-                className="text-xs font-bold text-indigo-600 flex items-center gap-1 hover:text-indigo-700"
+                className="text-xs font-bold text-teal-600 flex items-center gap-1 hover:text-teal-700"
               >
                 <Add fontSize="small" /> Add Agenda Item
               </button>
@@ -389,9 +397,13 @@ const EventFormModal = ({
             type="submit"
             form="event-form"
             disabled={isLoading}
-            className="px-6 py-2 text-sm font-bold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-sm shadow-indigo-200 disabled:opacity-50 transition-all"
+            className="px-6 py-2 text-sm font-bold text-white bg-teal-600 hover:bg-teal-700 rounded-lg shadow-sm shadow-teal-200 disabled:opacity-50 transition-all"
           >
-            {isLoading ? "Saving..." : title === "Create New Event" ? "Create Event" : "Save Changes"}
+            {isLoading
+              ? "Saving..."
+              : title === "Create New Event"
+              ? "Create Event"
+              : "Save Changes"}
           </button>
         </div>
       </div>

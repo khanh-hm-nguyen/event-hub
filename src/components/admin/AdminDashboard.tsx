@@ -20,7 +20,7 @@ const AdminDashboard = () => {
 
         <Link
           href="/admin/events"
-          className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-8 py-4 rounded-2xl text-sm font-black shadow-xl shadow-indigo-100 transition-all active:scale-95 group"
+          className="flex items-center gap-2 bg-teal-600  hover:bg-teal-700 text-white px-8 py-4 rounded-2xl text-sm font-black shadow-xl shadow-indigo-100 transition-all active:scale-95 group"
         >
           <Add
             style={{ fontSize: 20 }}

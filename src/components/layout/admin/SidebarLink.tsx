@@ -15,14 +15,14 @@ const SidebarLink = ({
   return (
     <Link
       href={href}
-      className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200
+      className={`flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-bold transition-all duration-200
         ${
           isActive
-            ? "bg-indigo-50 text-indigo-700"
-            : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+            ? "bg-slate-900 text-white shadow-lg shadow-slate-200"
+            : "text-slate-500 hover:bg-slate-100 hover:text-slate-900"
         }`}
     >
-      <span className={`${isActive ? "text-indigo-600" : "text-slate-400"}`}>
+      <span className={`flex transition-colors ${isActive ? "text-[#5dfeca]" : "text-slate-400"}`}>
         {icon}
       </span>
       {label}

@@ -45,12 +45,6 @@ export default function BookingModal({
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Removed the Select dropdown because the Event is fixed */}
-          {/* <div className="p-3 bg-slate-50 rounded-xl border border-slate-100 mb-2">
-            <p className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Target Event ID</p>
-            <p className="text-xs font-mono text-slate-600 truncate">{eventId}</p>
-          </div> */}
-
           <InputField
             label="Attendee Email"
             value={email}
@@ -71,7 +65,7 @@ export default function BookingModal({
             <button
               type="submit"
               disabled={isLoading}
-              className="px-6 py-2 text-sm font-bold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg disabled:opacity-50 transition-all shadow-sm shadow-indigo-200"
+              className="px-6 py-2 text-sm font-bold text-white bg-teal-600 hover:bg-teal-700 rounded-lg disabled:opacity-50 transition-all shadow-sm shadow-teal-200"
             >
               {isLoading
                 ? "Saving..."

@@ -121,7 +121,7 @@ const AdminEventsPage = () => {
           </div>
           <button
             onClick={handleCreateClick}
-            className="group bg-indigo-600 hover:bg-indigo-700 text-white px-8 py-3.5 rounded-2xl flex gap-2 items-center font-bold shadow-lg shadow-indigo-100 transition-all active:scale-95"
+            className="group bg-teal-600 hover:bg-teal-700 text-white px-8 py-3.5 rounded-2xl flex gap-2 items-center font-bold shadow-lg shadow-indigo-100 transition-all active:scale-95"
           >
             <Add
               fontSize="small"
@@ -135,7 +135,7 @@ const AdminEventsPage = () => {
       {/* --- Single Stats Card --- */}
       <div className="flex justify-start">
         <div className="bg-white border border-slate-200 py-4 px-8 rounded-[2rem] flex items-center gap-5 shadow-sm min-w-[240px]">
-          <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center">
+          <div className="w-12 h-12 bg-blue-50 text-teal-600 rounded-2xl flex items-center justify-center">
             <EventAvailable />
           </div>
           <div>

@@ -66,7 +66,7 @@ const BookingsTable = ({
               <td className="px-6 py-4 font-medium text-slate-900">
                 {booking.email}
               </td>
-              <td className="px-6 py-4 text-indigo-600 font-medium">
+              <td className="px-6 py-4 text-teal-600 font-medium">
                 {getEventTitle(booking.eventId.toString())}
               </td>
               <td className="px-6 py-4 text-slate-500">
@@ -77,7 +77,7 @@ const BookingsTable = ({
                 <div className="flex items-center justify-end gap-2">
                   <button
                     onClick={() => onEdit(booking)}
-                    className="p-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
+                    className="p-2 text-slate-400 hover:text-teal-600 hover:bg-teal-50 rounded-lg transition-colors"
                   >
                     <Edit fontSize="small" />
                   </button>
