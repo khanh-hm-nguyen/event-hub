@@ -1,18 +1,17 @@
-'use server';
-
-import { Booking } from "@/models";
+"use server";
 
 import connectDB from "@/lib/mongodb";
+import { bookingService } from "@/services/booking.service";
 
-export const createBooking = async ({ eventId, slug, email }: { eventId: string; slug: string; email: string; }) => {
-    try {
-        await connectDB();
+export const getBookingsByEventId = async (eventId: string) => {
+  try {
+    await connectDB();
 
-        await Booking.create({ eventId, slug, email });
+    const bookings = await bookingService.getBookingsByEventId(eventId);
 
-        return { success: true };
-    } catch (e) {
-        console.error('create booking failed', e);
-        return { success: false };
-    }
-}
+    return JSON.parse(JSON.stringify(bookings));
+  } catch (error) {
+    console.error(`Failed to fetch bookings for event ${eventId}:`, error);
+    return [];
+  }
+};

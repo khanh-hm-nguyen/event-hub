@@ -4,7 +4,6 @@ import { IEvent } from "@/models";
 import BookEvent from "./BookEvent";
 import EventCard from "./EventCard";
 
-
 import { getEventBySlug, getSimilarEventsBySlug } from "@/actions/event.action";
 
 const EventDetailItem = ({
@@ -143,7 +142,7 @@ const EventDetails = async ({
             )}
 
             {/* Ensure BookEvent can handle the ID format (string vs ObjectId) */}
-            <BookEvent eventId={event._id as string} slug={event.slug} />
+            <BookEvent eventId={event._id as string} />
           </div>
         </aside>
       </div>

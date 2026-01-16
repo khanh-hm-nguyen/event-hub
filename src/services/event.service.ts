@@ -57,6 +57,7 @@ export const eventService = {
     return createdEvent;
   },
 
+  // return event by slug
   getEventBySlug: async (slug: string): Promise<IEvent | null> => {
     // Validate slug parameter
     if (!slug || typeof slug !== "string" || slug.trim() === "") {
@@ -65,6 +66,13 @@ export const eventService = {
     const sanitizedSlug = slug.trim().toLowerCase();
     // Query events by slug
     const event = await Event.findOne({ slug: sanitizedSlug }).lean<IEvent>();
+    return event;
+  },
+
+  // return event by id
+  getEventById: async (id: string): Promise<IEvent | null> => {
+    const event = await Event.findById(id).lean<IEvent>();
+
     return event;
   },
 };

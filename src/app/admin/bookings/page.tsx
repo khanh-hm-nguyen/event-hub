@@ -1,9 +1,9 @@
-import BookingPage from "@/components/admin/boookings/BookingPage";
+import BookingsOverviewPage from "@/components/admin/boookings/BookingsOverviewPage";
 
 const page = () => {
   return (
     <>
-      <BookingPage />
+      <BookingsOverviewPage />
     </>
   );
 };

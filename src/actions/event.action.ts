@@ -45,3 +45,19 @@ export const getEventBySlug = async (slug: string) => {
     return [];
   }
 };
+
+
+export const getEventById = async (id: string) => {
+  try {
+    await connectDB();
+
+    const event = await eventService.getEventById(id);
+
+    if (!event) return null;
+
+    return JSON.parse(JSON.stringify(event));
+  } catch (error) {
+    console.error(`Failed to fetch event by slug (${id}):`, error);
+    return [];
+  }
+}
