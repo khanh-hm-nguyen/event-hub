@@ -1,45 +1,12 @@
 import { notFound } from "next/navigation";
 import Image from "next/image";
-import { IEvent } from "@/models";
-import { BookEvent, EventCard } from ".";
+import { Suspense } from "react";
+import { BookEvent } from ".";
+import { SimilarEvents, EventAgenda, EventTags, EventDetailItem } from ".";
 
-import { getEventBySlug, getSimilarEventsBySlug } from "@/actions/event.action";
+import { getEventBySlug } from "@/actions/event.action";
+import { EventSkeleton } from "../home";
 
-const EventDetailItem = ({
-  icon,
-  alt,
-  label,
-}: {
-  icon: string;
-  alt: string;
-  label: string;
-}) => (
-  <div className="flex-row-gap-2 items-center">
-    <Image src={icon} alt={alt} width={17} height={17} />
-    <p>{label}</p>
-  </div>
-);
-
-const EventAgenda = ({ agendaItems }: { agendaItems: string[] }) => (
-  <div className="agenda">
-    <h2>Agenda</h2>
-    <ul>
-      {agendaItems.map((item) => (
-        <li key={item}>{item}</li>
-      ))}
-    </ul>
-  </div>
-);
-
-const EventTags = ({ tags }: { tags: string[] }) => (
-  <div className="flex flex-row gap-1.5 flex-wrap">
-    {tags.map((tag) => (
-      <div className="pill" key={tag}>
-        {tag}
-      </div>
-    ))}
-  </div>
-);
 
 const EventDetails = async ({
   params,
@@ -47,13 +14,9 @@ const EventDetails = async ({
   params: Promise<{ slug: string }>;
 }) => {
   const { slug } = await params;
-
-  // get event from server action
   const event = await getEventBySlug(slug);
 
-  if (!event) {
-    return notFound();
-  }
+  if (!event) return notFound();
 
   const {
     description,
@@ -69,92 +32,91 @@ const EventDetails = async ({
     organizer,
   } = event;
 
-  if (!description) return notFound();
-
-  const bookings = 10;
-
-  // return similar events by slug
-  const similarEvents: IEvent[] = await getSimilarEventsBySlug(slug);
-
   return (
-    <section id="event">
-      <div className="header">
-        <h1>Event Description</h1>
-        <p>{description}</p>
+    <section id="event" className="max-w-7xl mx-auto px-6">
+      <div className="header mb-10">
+        <h1 className="text-4xl font-black text-white mb-4">
+          Event Description
+        </h1>
+        <p className="text-slate-400 text-lg">{description}</p>
       </div>
 
-      <div className="details">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
         {/* Left Side - Event Content */}
-        <div className="content">
+        <div className="lg:col-span-2 space-y-10">
           <Image
             src={image}
             alt="Event Banner"
-            width={800}
-            height={800}
-            className="banner"
-            priority // Optimization: Load banner eagerly
+            width={1200}
+            height={600}
+            className="rounded-[2.5rem] border border-white/10 w-full object-cover"
+            priority
           />
 
-          <section className="flex-col-gap-2">
-            <h2>Overview</h2>
-            <p>{overview}</p>
+          <section className="space-y-4">
+            <h2 className="text-2xl font-bold">Overview</h2>
+            <p className="text-slate-300 leading-relaxed">{overview}</p>
           </section>
 
-          <section className="flex-col-gap-2">
-            <h2>Event Details</h2>
-            <EventDetailItem
-              icon="/icons/calendar.svg"
-              alt="calendar"
-              label={date}
-            />
-            <EventDetailItem icon="/icons/clock.svg" alt="clock" label={time} />
-            <EventDetailItem icon="/icons/pin.svg" alt="pin" label={location} />
-            <EventDetailItem icon="/icons/mode.svg" alt="mode" label={mode} />
-            <EventDetailItem
-              icon="/icons/audience.svg"
-              alt="audience"
-              label={audience}
-            />
+          <section className="space-y-4">
+            <h2 className="text-2xl font-bold">Event Details</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <EventDetailItem
+                icon="/icons/calendar.svg"
+                alt="calendar"
+                label={date}
+              />
+              <EventDetailItem
+                icon="/icons/clock.svg"
+                alt="clock"
+                label={time}
+              />
+              <EventDetailItem
+                icon="/icons/pin.svg"
+                alt="pin"
+                label={location}
+              />
+              <EventDetailItem icon="/icons/mode.svg" alt="mode" label={mode} />
+              <EventDetailItem
+                icon="/icons/audience.svg"
+                alt="audience"
+                label={audience}
+              />
+            </div>
           </section>
 
           <EventAgenda agendaItems={agenda} />
 
-          <section className="flex-col-gap-2">
-            <h2>About the Organizer</h2>
-            <p>{organizer}</p>
+          <section className="space-y-4">
+            <h2 className="text-2xl font-bold">About the Organizer</h2>
+            <p className="text-slate-300">{organizer}</p>
           </section>
 
           <EventTags tags={tags} />
         </div>
 
-        {/* Right Side - Booking Form */}
-        <aside className="booking">
-          <div className="signup-card">
-            <h2>Book Your Spot</h2>
-            {bookings > 0 ? (
-              <p className="text-sm">
-                Join {bookings} people who have already booked their spot!
-              </p>
-            ) : (
-              <p className="text-sm">Be the first to book your spot!</p>
-            )}
-
-            {/* Ensure BookEvent can handle the ID format (string vs ObjectId) */}
-            <BookEvent eventId={event._id as string} />
+        {/* Right Side - Sticky Booking Card */}
+        <aside className="lg:col-span-1">
+          <div className="sticky top-28 bg-white/5 border border-white/10 p-8 rounded-[2rem] space-y-6">
+            <h2 className="text-2xl font-bold">Book Your Spot</h2>
+            <p className="text-sm text-slate-400 font-medium">
+              Join the community and secure your seat today!
+            </p>
+            <BookEvent eventId={String(event._id)} />
           </div>
         </aside>
       </div>
 
-      <div className="flex w-full flex-col gap-4 pt-20">
-        {similarEvents.length > 0 && <h2>Similar Events</h2>}
-
-        <div className="events">
-          {similarEvents.length > 0 &&
-            similarEvents.map((similarEvent: IEvent) => (
-              <EventCard key={similarEvent.title} {...similarEvent} />
-            ))}
-        </div>
-      </div>
+      {/* --- Optimized Caching Section --- */}
+      <Suspense
+        fallback={
+          <div className="mt-20">
+            <EventSkeleton />
+          </div>
+        }
+      >
+        <SimilarEvents slug={slug} />
+      </Suspense>
     </section>
   );
 };

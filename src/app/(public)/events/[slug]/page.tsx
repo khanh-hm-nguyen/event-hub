@@ -1,12 +1,11 @@
-//import { Suspense } from "react";
-import { EventDetails } from "@/components/event";
+import { Suspense } from "react";
+import { EventDetails, EventDetailsSkeleton } from "@/components/event";
 
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Event", 
+  title: "Event",
 };
-
 
 const EventDetailsPage = async ({
   params,
@@ -14,9 +13,9 @@ const EventDetailsPage = async ({
   params: Promise<{ slug: string }>;
 }) => {
   return (
-    <main>
+    <Suspense fallback={<EventDetailsSkeleton />}>
       <EventDetails params={params} />
-    </main>
+    </Suspense>
   );
 };
 export default EventDetailsPage;
