@@ -3,6 +3,12 @@
 
 @custom-variant dark (&:is(.dark *));
 
+@layer base {
+  html {
+    @apply scroll-smooth;
+  }
+}
+
 :root {
     --color-blue: #94eaff;
     --color-light-100: #e7f2ff;

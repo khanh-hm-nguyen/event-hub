@@ -8,6 +8,7 @@ import { eventService } from "@/services/event.service";
 import { isAdmin } from "@/utils/getDataFromToken";
 
 export const getSimilarEventsBySlug = async (slug: string) => {
+  "use cache";
   try {
     await connectDB();
     const event = await Event.findOne({ slug });
@@ -22,6 +23,7 @@ export const getSimilarEventsBySlug = async (slug: string) => {
 };
 
 export const getAllEvents = async () => {
+  "use cache";
   try {
     await connectDB();
     const events = await eventService.getAllEvents();
@@ -33,6 +35,7 @@ export const getAllEvents = async () => {
 };
 
 export const getEventBySlug = async (slug: string) => {
+  "use cache";
   try {
     await connectDB();
 

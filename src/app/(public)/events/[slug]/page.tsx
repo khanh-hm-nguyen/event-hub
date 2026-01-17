@@ -1,5 +1,5 @@
 //import { Suspense } from "react";
-import EventDetails from "@/components/EventDetails";
+import { EventDetails } from "@/components/event";
 
 import { Metadata } from "next";
 

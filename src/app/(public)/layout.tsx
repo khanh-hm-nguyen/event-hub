@@ -1,4 +1,4 @@
-import LightRays from "@/components/LightRays";
+import LightRays from "@/components/layout/public/LightRays";
 import Header from "@/components/layout/public/Header";
 import Footer from "@/components/layout/public/Footer";
 

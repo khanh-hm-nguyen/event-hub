@@ -1,8 +1,7 @@
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import { IEvent } from "@/models";
-import BookEvent from "./BookEvent";
-import EventCard from "./EventCard";
+import { BookEvent, EventCard } from ".";
 
 import { getEventBySlug, getSimilarEventsBySlug } from "@/actions/event.action";
 
@@ -72,7 +71,6 @@ const EventDetails = async ({
 
   if (!description) return notFound();
 
-  // You might want to fetch real booking counts later, for now keeping static
   const bookings = 10;
 
   // return similar events by slug
