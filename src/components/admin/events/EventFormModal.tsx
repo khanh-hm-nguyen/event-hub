@@ -6,8 +6,6 @@ import type { IEvent } from "@/models";
 import InputField from "@/components/ui/InputField";
 
 // 1. Define the shape of our Form State
-// We Pick all fields from IEvent, but override 'image' to be File | string | null
-// (string is needed for Edit mode to show existing image URL)
 export type EventFormState = Pick<
   IEvent,
   | "title"
@@ -47,8 +45,8 @@ interface EventFormModalProps {
   isOpen: boolean;
   onClose: () => void;
   isLoading: boolean;
-  initialData?: EventFormState | null; // Optional: If provided, we are in "Edit Mode"
-  onSubmit: (data: EventFormState) => Promise<void>; // Pass raw state back to parent
+  initialData?: EventFormState | null; 
+  onSubmit: (data: EventFormState) => Promise<void>; 
   title?: string;
 }
 
@@ -63,24 +61,24 @@ const EventFormModal = ({
   const [formData, setFormData] = useState<EventFormState>(INITIAL_DATA);
   const [localError, setLocalError] = useState("");
 
-  // 3. Effect: Populate form if initialData (Edit Mode) exists
+  
   useEffect(() => {
     if (isOpen) {
       if (initialData) {
-        // We are editing: Fill the form
+    
         setFormData({
           ...initialData,
-          // Ensure dates are formatted YYYY-MM-DD for input type="date"
+        
           date:
             typeof initialData.date === "string"
               ? initialData.date.split("T")[0]
               : initialData.date,
-          // Ensure arrays exist
+    
           tags: initialData.tags?.length ? initialData.tags : [""],
           agenda: initialData.agenda?.length ? initialData.agenda : [""],
         });
       } else {
-        // We are creating: Reset to empty
+      
         setFormData(INITIAL_DATA);
       }
       setLocalError("");
@@ -138,7 +136,7 @@ const EventFormModal = ({
       if (!formData.title) throw new Error("Title is required");
       if (!initialData && !formData.image) throw new Error("Image is required");
 
-      // Pass the raw data to the parent. The parent decides how to format it (FormData vs JSON).
+
       await onSubmit(formData);
     } catch (err: any) {
       setLocalError(err.message);

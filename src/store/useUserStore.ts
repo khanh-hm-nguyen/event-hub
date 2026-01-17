@@ -2,11 +2,10 @@ import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import { IUser } from "@/models";
 
-
 interface UserState {
   user: IUser | null;
-  isHydrated: boolean; 
-  
+  isHydrated: boolean;
+
   setUser: (user: IUser) => void;
   clearUser: () => void; // Standardized naming
   setHydrated: (state: boolean) => void;
@@ -19,14 +18,12 @@ export const useUserStore = create<UserState>()(
       isHydrated: false,
 
       setUser: (user) => {
-        console.log("Zustand: Setting user", user);
         set({ user });
       },
 
       clearUser: () => {
-        console.log("Zustand: Clearing user state");
         set({ user: null });
-        useUserStore.persist.clearStorage(); 
+        useUserStore.persist.clearStorage();
       },
 
       setHydrated: (state) => set({ isHydrated: state }),
@@ -34,12 +31,12 @@ export const useUserStore = create<UserState>()(
     {
       name: "user-storage",
       storage: createJSONStorage(() => localStorage),
-      
+
       // Hydration check to prevent SSR mismatch errors
       onRehydrateStorage: () => (state) => {
         console.log("Zustand: Hydration finished");
         state?.setHydrated(true);
       },
-    }
-  )
+    },
+  ),
 );
