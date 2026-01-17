@@ -7,6 +7,8 @@ import {
   DashboardOutlined, 
   LogoutOutlined 
 } from "@mui/icons-material";
+// Added Lucide for the new links to match the Admin style
+import { Users, Headset } from "lucide-react"; 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useUserStore } from "@/store/useUserStore";
@@ -37,24 +39,32 @@ const Header = () => {
         <Logo />
 
         {/* --- Navigation --- */}
-        <div className="hidden md:flex items-center gap-10">
-          <a href="/#events" className="text-xs font-black text-slate-300 hover:text-[#5dfeca] uppercase tracking-[0.2em] transition-colors flex items-center gap-2">
+        <div className="hidden md:flex items-center gap-8">
+          <a href="/#events" className="text-[10px] font-black text-slate-300 hover:text-[#5dfeca] uppercase tracking-[0.2em] transition-colors flex items-center gap-2">
             <ExploreOutlined style={{ fontSize: 18 }} />
-            Browse Events
+            Browse
           </a>
+          
+          <Link href="/community" className="text-[10px] font-black text-slate-300 hover:text-[#5dfeca] uppercase tracking-[0.2em] transition-colors flex items-center gap-2">
+            <Users size={16} />
+            Community
+          </Link>
+
+          <Link href="/contact" className="text-[10px] font-black text-slate-300 hover:text-[#5dfeca] uppercase tracking-[0.2em] transition-colors flex items-center gap-2">
+            <Headset size={16} />
+            Support
+          </Link>
         </div>
 
         {/* --- Action Section --- */}
         <div className="flex items-center gap-3">
           {isLoggedIn ? (
             <>
-              {/* User Info Display */}
               <div className="hidden sm:flex flex-col items-end mr-2">
                 <span className="text-[9px] font-black text-[#5dfeca] uppercase tracking-[0.2em]">Member</span>
                 <span className="text-sm font-bold text-white tracking-tight">{user.name}</span>
               </div>
 
-              {/* Dashboard/Account Link */}
               <Link
                 href={user.role === "admin" ? "/admin" : "/profile"}
                 className="flex items-center justify-center w-11 h-11 text-slate-300 hover:text-[#5dfeca] bg-white/5 border border-white/10 rounded-2xl transition-all"
@@ -63,10 +73,9 @@ const Header = () => {
                 {user.role === "admin" ? <DashboardOutlined /> : <AccountCircleOutlined />}
               </Link>
 
-              {/* Logout Button */}
               <button
                 onClick={handleLogout}
-                className="flex items-center justify-center w-11 h-11 text-slate-400 hover:text-rose-800 bg-white/5 border border-white/10 rounded-2xl transition-all hover:bg-rose-600/10 cursor-pointer"
+                className="flex items-center justify-center w-11 h-11 text-slate-400 hover:text-rose-500 bg-white/5 border border-white/10 rounded-2xl transition-all hover:bg-rose-600/10 cursor-pointer"
                 title="Sign Out"
               >
                 <LogoutOutlined style={{ fontSize: 20 }} />

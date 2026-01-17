@@ -3,7 +3,8 @@ import connectDB from "@/lib/mongodb";
 import { getDataFromToken } from "@/utils/getDataFromToken";
 import { handleCommonErrors } from "@/utils/errorHandler";
 import { bookingService } from "@/services/booking.service";
-
+import { cacheUtils } from "@/utils/cache";
+import { Event } from "@/models";
 
 /**
  * DELETE /api/bookings/[id]
@@ -11,7 +12,7 @@ import { bookingService } from "@/services/booking.service";
  */
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ): Promise<NextResponse> {
   try {
     // only allow admin to delete booking
@@ -20,7 +21,7 @@ export async function DELETE(
     if (!user || user.role !== "admin") {
       return NextResponse.json(
         { message: "Forbidden. Admin access required." },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -33,13 +34,20 @@ export async function DELETE(
     if (!deletedBooking) {
       return NextResponse.json(
         { message: `Event with id '${id}' not found` },
-        { status: 404 }
+        { status: 404 },
       );
+    }
+
+    if (deletedBooking) {
+      const event = await Event.findById(deletedBooking.eventId).lean();
+      if (event) {
+        cacheUtils.revalidateEvent(event.slug);
+      }
     }
 
     return NextResponse.json(
       { message: "Event deleted successfully" },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error) {
     return handleCommonErrors(error);

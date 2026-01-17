@@ -1,6 +1,5 @@
 // src/components/public/Footer.tsx
 import Logo from "@/components/ui/Logo";
-import Link from "next/link";
 
 const Footer = () => {
   return (
@@ -9,25 +8,13 @@ const Footer = () => {
         
         <Logo />
 
-        <div className="flex flex-wrap justify-center items-center gap-8">
+        <div className="flex items-center gap-8">
           <a 
             href="/#events" 
             className="text-[11px] font-black text-slate-500 hover:text-[#5dfeca] uppercase tracking-[0.2em] transition-colors"
           >
-            Browse Events
+            Explore Events
           </a>
-          <Link 
-            href="/community" 
-            className="text-[11px] font-black text-slate-500 hover:text-[#5dfeca] uppercase tracking-[0.2em] transition-colors"
-          >
-            Community
-          </Link>
-          <Link 
-            href="/contact" 
-            className="text-[11px] font-black text-slate-500 hover:text-[#5dfeca] uppercase tracking-[0.2em] transition-colors"
-          >
-            Contact Support
-          </Link>
         </div>
 
         <p className="text-[10px] font-bold text-slate-600 uppercase tracking-widest">

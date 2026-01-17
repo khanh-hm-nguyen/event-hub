@@ -7,7 +7,6 @@ import { SimilarEvents, EventAgenda, EventTags, EventDetailItem } from ".";
 import { getEventBySlug } from "@/actions/event.action";
 import { EventSkeleton } from "../home";
 
-
 const EventDetails = async ({
   params,
 }: {
@@ -102,7 +101,7 @@ const EventDetails = async ({
             <p className="text-sm text-slate-400 font-medium">
               Join the community and secure your seat today!
             </p>
-            <BookEvent eventId={String(event._id)} />
+            <BookEvent eventId={(event._id).toString()} />
           </div>
         </aside>
       </div>

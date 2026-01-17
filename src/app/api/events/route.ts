@@ -5,6 +5,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getDataFromToken } from "@/utils/getDataFromToken";
 import { handleCommonErrors } from "@/utils/errorHandler";
 import { eventService } from "@/services/event.service";
+import { cacheUtils } from "@/utils/cache";
 
 // create an event
 export async function POST(req: NextRequest) {
@@ -15,7 +16,7 @@ export async function POST(req: NextRequest) {
     if (!user || user.role !== "admin") {
       return NextResponse.json(
         { message: "Forbidden. Admin access required." },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -24,9 +25,11 @@ export async function POST(req: NextRequest) {
     const formData = await req.formData();
     const createdEvent = await eventService.createEvent(formData);
 
+    cacheUtils.revalidateEvent();
+
     return NextResponse.json(
       { message: "Event created successfully", event: createdEvent },
-      { status: 201 }
+      { status: 201 },
     );
   } catch (error) {
     return handleCommonErrors(error);
@@ -42,7 +45,7 @@ export async function GET(req: NextRequest) {
     if (!user || user.role !== "admin") {
       return NextResponse.json(
         { message: "Forbidden. Admin access required." },
-        { status: 403 }
+        { status: 403 },
       );
     }
     await connectDB();
@@ -51,7 +54,7 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json(
       { message: "Events fetched successfully", events },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error) {
     return handleCommonErrors(error);

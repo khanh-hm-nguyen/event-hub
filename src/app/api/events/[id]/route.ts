@@ -1,7 +1,5 @@
 //api/events/[id]/route.ts
 import { NextRequest, NextResponse } from "next/server";
-import { revalidateTag } from "next/cache";
-
 import connectDB from "@/lib/mongodb";
 import { Event } from "@/models";
 

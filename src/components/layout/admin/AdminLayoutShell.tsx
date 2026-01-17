@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, ReactNode } from "react";
+import { useState, ReactNode, Suspense } from "react";
 import AdminHeader from "./AdminHeader";
 import SidebarContent from "./SidebarContent";
 
@@ -15,7 +15,9 @@ const AdminLayoutShell = ({ children }: AdminLayoutShellProps) => {
     <div className="flex h-screen bg-slate-50 font-sans text-slate-900">
       {/* Sidebar (Desktop) */}
       <aside className="hidden md:flex w-64 flex-col bg-white border-r border-slate-200 fixed inset-y-0 z-20">
-        <SidebarContent />
+        <Suspense fallback={<div className="p-6">Loading Sidebar...</div>}>
+          <SidebarContent />
+        </Suspense>
       </aside>
 
       {/* Sidebar (Mobile) */}
@@ -26,7 +28,9 @@ const AdminLayoutShell = ({ children }: AdminLayoutShellProps) => {
             onClick={() => setIsMobileMenuOpen(false)}
           />
           <aside className="relative w-64 bg-white h-full shadow-2xl flex flex-col">
-            <SidebarContent />
+            <Suspense fallback={<div className="p-6">Loading Sidebar...</div>}>
+              <SidebarContent />
+            </Suspense>
           </aside>
         </div>
       )}
