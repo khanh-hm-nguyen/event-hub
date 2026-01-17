@@ -4,9 +4,11 @@ import { useState, useMemo } from "react";
 import { Add, EventAvailable, ErrorOutline } from "@mui/icons-material";
 import { useResource } from "@/hooks/useResource";
 import EventsTable from "@/components/admin/events/EventsTable";
-import EventFormModal, { EventFormState } from "@/components/admin/events/EventFormModal";
+import EventFormModal, {
+  EventFormState,
+} from "@/components/admin/events/EventFormModal";
 import { IEvent } from "@/models";
-import { getAllEvents } from "@/actions/event.action"; // Your Server Action
+import { getAllEvents } from "@/actions/event.action";
 import { useEffect } from "react";
 
 interface IEventFrontend extends Omit<IEvent, "_id"> {
@@ -14,11 +16,9 @@ interface IEventFrontend extends Omit<IEvent, "_id"> {
 }
 
 const AdminEventsContent = () => {
-  // We still use useResource for Create/Delete logic, 
-  // but we will initialize data from the Server Action
   const {
     items: events,
-    setItems, // Make sure your hook exposes setItems
+    setItems,
     isLoading,
     error,
     createItem,
@@ -29,11 +29,10 @@ const AdminEventsContent = () => {
   const [editingEvent, setEditingEvent] = useState<EventFormState | null>(null);
   const [editingId, setEditingId] = useState<string | null>(null);
 
-  // Use the Server Action to fetch items on mount
   useEffect(() => {
     const loadData = async () => {
       const data = await getAllEvents();
-      // Ensure data is stringified for frontend
+
       setItems(JSON.parse(JSON.stringify(data)));
     };
     loadData();
@@ -94,8 +93,14 @@ const AdminEventsContent = () => {
       });
 
       if (data.image instanceof File) formData.append("image", data.image);
-      formData.append("tags", JSON.stringify(data.tags?.filter((t) => t.trim() !== "")));
-      formData.append("agenda", JSON.stringify(data.agenda?.filter((a) => a.trim() !== "")));
+      formData.append(
+        "tags",
+        JSON.stringify(data.tags?.filter((t) => t.trim() !== "")),
+      );
+      formData.append(
+        "agenda",
+        JSON.stringify(data.agenda?.filter((a) => a.trim() !== "")),
+      );
 
       const success = await createItem(formData, false);
       if (success) setIsModalOpen(false);
@@ -122,7 +127,10 @@ const AdminEventsContent = () => {
           onClick={handleCreateClick}
           className="group bg-teal-600 hover:bg-teal-700 text-white px-8 py-3.5 rounded-2xl flex gap-2 items-center font-bold shadow-lg transition-all active:scale-95"
         >
-          <Add fontSize="small" className="group-hover:rotate-90 transition-transform" />
+          <Add
+            fontSize="small"
+            className="group-hover:rotate-90 transition-transform"
+          />
           <span>Create New Event</span>
         </button>
       </div>
