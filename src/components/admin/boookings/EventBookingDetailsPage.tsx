@@ -11,8 +11,12 @@ interface EventBookingDetailsPageProps {
 const EventBookingDetailsPage = async ({
   eventId,
 }: EventBookingDetailsPageProps) => {
-  const bookings = await getBookingsByEventId(eventId);
-  const event = await getEventById(eventId);
+  const [bookings, event] = await Promise.all([
+    getBookingsByEventId(eventId),
+    getEventById(eventId),
+  ]);
+
+  if (!event) return <div>Event not found</div>;
 
   return (
     <div className="w-full space-y-6 p-6 lg:p-10 bg-[#f8faff] min-h-screen">

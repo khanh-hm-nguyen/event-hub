@@ -1,6 +1,5 @@
 //api/events/[id]/route.ts
 import { NextRequest, NextResponse } from "next/server";
-
 import connectDB from "@/lib/mongodb";
 import { Event } from "@/models";
 
@@ -8,6 +7,8 @@ import { getDataFromToken } from "@/utils/getDataFromToken";
 import { handleCommonErrors } from "@/utils/errorHandler";
 
 import { eventService } from "@/services/event.service";
+
+import { cacheUtils } from "@/utils/cache";
 
 type RouteParams = {
   params: Promise<{
@@ -22,7 +23,7 @@ type RouteParams = {
 
 export async function GET(
   req: NextRequest,
-  { params }: RouteParams
+  { params }: RouteParams,
 ): Promise<NextResponse> {
   try {
     // Connect to database
@@ -38,14 +39,14 @@ export async function GET(
     if (!event) {
       return NextResponse.json(
         { message: `Event with id '${id}' not found` },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
     // Return successful response with events data
     return NextResponse.json(
       { message: "Event fetched successfully", event },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error) {
     return handleCommonErrors(error);
@@ -58,7 +59,7 @@ export async function GET(
  */
 export async function PUT(
   req: NextRequest,
-  { params }: RouteParams
+  { params }: RouteParams,
 ): Promise<NextResponse> {
   try {
     // only allow admin to update event
@@ -67,7 +68,7 @@ export async function PUT(
     if (!user || user.role !== "admin") {
       return NextResponse.json(
         { message: "Forbidden. Admin access required." },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -85,13 +86,16 @@ export async function PUT(
     if (!updatedEvent) {
       return NextResponse.json(
         { message: `Event with id '${id}' not found` },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
+    const slug = updatedEvent.slug;
+    cacheUtils.revalidateEvent(slug);
+
     return NextResponse.json(
       { message: "Event updated successfully", event: updatedEvent },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error) {
     return handleCommonErrors(error);
@@ -104,7 +108,7 @@ export async function PUT(
  */
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: Promise<{ id: string }> } // Updated type definition
+  { params }: { params: Promise<{ id: string }> }, // Updated type definition
 ): Promise<NextResponse> {
   try {
     // only allow admin to delete event
@@ -113,25 +117,31 @@ export async function DELETE(
     if (!user || user.role !== "admin") {
       return NextResponse.json(
         { message: "Forbidden. Admin access required." },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
     await connectDB();
     const { id } = await params;
 
-    const deletedEvent = await Event.findByIdAndDelete(id);
-
-    if (!deletedEvent) {
-      return NextResponse.json(
-        { message: `Event with id '${id}' not found` },
-        { status: 404 }
-      );
+    // find event
+    const eventToDelete = await Event.findById(id).lean();
+    if (!eventToDelete) {
+      return NextResponse.json({ message: "Event not found" }, { status: 404 });
     }
+
+    // get the slug before deleting
+    const slug = eventToDelete.slug;
+
+    // delete event
+    await Event.findByIdAndDelete(id);
+
+    // clear all related caches
+    cacheUtils.revalidateEvent(slug);
 
     return NextResponse.json(
       { message: "Event deleted successfully" },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error) {
     return handleCommonErrors(error);

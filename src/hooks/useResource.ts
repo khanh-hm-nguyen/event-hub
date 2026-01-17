@@ -2,7 +2,7 @@ import { useState, useCallback } from "react";
 
 export const useResource = <T extends { _id: string }>(
   endpoint: string,
-  dataKey: string
+  dataKey: string,
 ) => {
   const [items, setItems] = useState<T[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -45,11 +45,10 @@ export const useResource = <T extends { _id: string }>(
     }
   };
 
-  
   const updateItem = async (
     id: string,
     payload: BodyInit,
-    isJson: boolean = false
+    isJson: boolean = false,
   ) => {
     setIsLoading(true);
     try {
@@ -87,6 +86,7 @@ export const useResource = <T extends { _id: string }>(
 
   return {
     items,
+    setItems,
     isLoading,
     error,
     fetchItems,

@@ -1,8 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import connectDB from "@/lib/mongodb";
-import { Booking } from "@/models";
+import { Booking, Event } from "@/models";
 import { getDataFromToken } from "@/utils/getDataFromToken";
 import { handleCommonErrors } from "@/utils/errorHandler";
+import { cacheUtils } from "@/utils/cache";
+import { revalidateTag } from "next/cache";
 
 // Get all bookings
 export async function GET(req: NextRequest) {
@@ -13,7 +15,7 @@ export async function GET(req: NextRequest) {
     if (!user || user.role !== "admin") {
       return NextResponse.json(
         { message: "Forbidden. Admin access required." },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -25,7 +27,7 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json(
       { message: "Bookings fetched successfully", bookings },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error) {
     return handleCommonErrors(error);
@@ -47,7 +49,7 @@ export async function POST(req: NextRequest) {
     if (!eventId || !email) {
       return NextResponse.json(
         { message: "Please provide both Event ID and Email" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -57,6 +59,13 @@ export async function POST(req: NextRequest) {
       email: email.toLowerCase(),
     });
 
+    const event = await Event.findById(eventId).lean();
+    if (event) {
+      cacheUtils.revalidateEvent(event.slug);
+    }
+
+    revalidateTag("bookings-metadata", "max");
+
     // 3. Return Success
     return NextResponse.json(
       {
@@ -64,7 +73,7 @@ export async function POST(req: NextRequest) {
           "Booking successful! detailed information has been sent to your email.",
         booking: newBooking,
       },
-      { status: 201 }
+      { status: 201 },
     );
   } catch (error) {
     return handleCommonErrors(error);

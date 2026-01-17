@@ -1,11 +1,12 @@
-import EventBookingDetailsPage from "@/components/admin/boookings/EventBookingDetailsPage";
+import { EventBookingDetailsPage } from "@/components/admin/boookings";
+import { Suspense } from "react";
+import AdminLoading from "../../loading";
 
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Booking DashBoard", 
+  title: "Booking DashBoard",
 };
-
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -14,7 +15,11 @@ interface PageProps {
 const Page = async ({ params }: PageProps) => {
   const { id } = await params;
 
-  return <EventBookingDetailsPage eventId={id} />;
+  return (
+    <Suspense fallback={<AdminLoading />}>
+      <EventBookingDetailsPage eventId={id} />
+    </Suspense>
+  );
 };
 
 export default Page;

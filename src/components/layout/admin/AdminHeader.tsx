@@ -1,3 +1,5 @@
+"use client"
+
 import { Menu, Person } from "@mui/icons-material";
 import { useUserStore } from "@/store/useUserStore";
 

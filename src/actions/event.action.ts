@@ -2,26 +2,41 @@
 
 "use server";
 
-import { Event } from "@/models";
+import { Event, IEvent } from "@/models";
 import connectDB from "@/lib/mongodb";
 import { eventService } from "@/services/event.service";
 import { isAdmin } from "@/utils/getDataFromToken";
+import { cacheTag } from "next/cache";
 
 export const getSimilarEventsBySlug = async (slug: string) => {
+  "use cache";
+  cacheTag("events", `similar-${slug}`);
   try {
     await connectDB();
     const event = await Event.findOne({ slug });
 
-    return await Event.find({
+    if (!event) return [];
+
+    const similarEvents = await Event.find({
       _id: { $ne: event._id },
       tags: { $in: event.tags },
-    }).lean();
-  } catch {
+    })
+      .limit(3)
+      .lean();
+
+    return similarEvents.map((item: IEvent) => ({
+      ...item,
+      _id: item._id.toString(),
+    }));
+  } catch (error) {
+    console.error("Similar Events Error:", error);
     return [];
   }
 };
 
 export const getAllEvents = async () => {
+  "use cache";
+  cacheTag("events");
   try {
     await connectDB();
     const events = await eventService.getAllEvents();
@@ -33,6 +48,8 @@ export const getAllEvents = async () => {
 };
 
 export const getEventBySlug = async (slug: string) => {
+  "use cache";
+  cacheTag("events", `event-${slug}`);
   try {
     await connectDB();
 
