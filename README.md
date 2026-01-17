@@ -3,13 +3,17 @@ EventHub is a premier, high-performance platform built for the global developer 
 
 ## ✨ Features
 ### 🌐 Public Experience
-* Dynamic Event Discovery: Browse featured events with a clean, high-contrast UI.
+* Next.js 16 Streaming: Utilizes Suspense boundaries and streaming SSR for instant page loads and a smooth user experience.
 
-* LightRays Aesthetic: A bespoke, dark glassmorphic design with neon green (#5dfeca) accents.
+* Admin Dashboard: Comprehensive CRUD operations for managing events and bookings with real-time UI updates.
 
-* Community Focused: Dedicated spaces to understand the vision and connect with other builders.
+* Cloudinary Integration: Seamless image uploads and optimizations for event banners via server-side streaming.
 
-* Responsive Design: Fully optimized for mobile, tablet, and desktop viewing.
+* Optimized Caching: Advanced data fetching using the "use cache" directive and on-demand revalidation (revalidateTag).
+
+* Secure Authentication: Role-based access control (Admin/User) powered by JWT and secure HTTP-only cookies.
+
+* Premium UI: Responsive, modern design using Tailwind CSS, Framer Motion, and Material UI icons.
 
 ### 🔐 Security & Auth
 * JWT Authentication: Secure session management using HTTP-only cookies.
@@ -58,8 +62,14 @@ npm install
 3. Environment Variables: Create a .env.local file in the root directory and add the following:
 
 ```MONGODB_URI=your_mongodb_connection_string
-JWT_SECRET=your_ultra_secure_secret_key
-NODE_ENV=development
+# MongoDB
+MONGODB_URI=your_mongodb_connection_string
+
+# Authentication
+JWT_SECRET=your_jwt_secret
+
+# Cloudinary
+CLOUDINARY_URL=cloudinary://<api_key>:<api_secret>@<cloud_name>
 ```
 
 4. Run the development server:
@@ -72,24 +82,26 @@ Open http://localhost:3000 with your browser to see the result.
 
 
 ## 🛡 API & Server Actions
-* The project utilizes a hybrid approach for maximum performance:
+### The project utilizes a hybrid approach for maximum performance and security:
 
-* Server Actions: Used for data fetching and administrative mutations (getEventById, getAllEvents).
+* Server Actions: Used for data fetching, administrative mutations, and on-demand cache revalidation (e.g., getAllEvents, getEventById).
 
-* API Routes: Used for authentication lifecycle (/api/auth/login, /api/auth/logout).
+* API Routes: Handles the authentication lifecycle and multipart/form-data for image streaming (e.g., /api/auth/login, /api/events).
 
-* Middleware: Centralized security layer for route protection.
+* Service Proxy: Centralized business logic layer that enforces authorization before database access.
 
-### 📂 Project Structure
+📂 Project Structure
 ```
-Plaintext
-
 src/
-├── actions/      # Secure Server Actions
-├── app/          # Next.js App Router (Public & Admin)
-├── components/   # Reusable UI & Layout components
-├── lib/          # Database connection & shared utilities
-├── models/       # Mongoose Schemas
-├── store/        # Zustand State Management
-└── middleware.ts # Route Protection Logic
+├── actions/      # Secure Server Actions & On-demand Revalidation
+├── app/          # Next.js App Router (Public, Admin, & API Routes)
+├── components/   # Reusable UI, Layouts, and Form components
+├── hooks/        # Custom React hooks (useResource, useStore)
+├── lib/          # Shared configurations (MongoDB, Cloudinary)
+├── models/       # Mongoose Schemas & Database Interfaces
+├── services/     # Business logic & Core Database operations
+├── store/        # Zustand Global State (User & Session)
+├── types/        # Global TypeScript definitions & Interface overrides
+├── utils/        # Auth helpers (Token parsing) & Error handling
+└── proxy.ts      # Centralized Authorization & Service Proxy
 ```
